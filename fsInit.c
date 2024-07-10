@@ -22,6 +22,7 @@
 #include <time.h>
 #include "fsLow.h"
 #include "mfs.h"
+<<<<<<< HEAD
 
 struct VolumeControlBlock
 {
@@ -33,6 +34,9 @@ struct VolumeControlBlock
 };
 
 struct VolumeControlBlock vcb;
+=======
+#include "vcb.h"
+>>>>>>> 1d5bf0da9d37c6307371d8e739d1a263e8a4b0ee
 
 int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 {
