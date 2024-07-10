@@ -42,7 +42,7 @@ struct DirectoryEntry{
     time_t accessTime; // Last access time 8 bytes
     unsigned int size; // File size in bytes 4 bytes
     unsigned int location; // Starting block of the file on the disk 4 bytes
-}
+};
 
 
     
