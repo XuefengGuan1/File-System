@@ -23,15 +23,19 @@ extern Freespace *fs;
 
 // FREE macro defined in freespace.h. Value of -1 for reserved blocks
 void initializeFreeSpace(Freespace *fs) {
-    for (int i = 0; i < fs->total_blocks; i++) {
+    for (int i = 0; i < fs->totalBlocks; i++) {
         fs->fat[i] = FREE;  
     }
     fs->fat[0] = -1;  
+    fs->fat[1] = -1;
+    fs->fat[2] = -1;
+    fs->freeBlocks = fs->totalBlocks-3;
 }
 int allocateBlock() {
-    for (int i = 0; i < fs->total_blocks; i++) {
+    for (int i = 0; i < fs->totalBlocks; i++) {
         if (fs->fat[i] == FREE) { 
             fs->fat[i] = -1;  
+            fs->freeBlocks--;
             return i;
         }
     }
@@ -39,18 +43,19 @@ int allocateBlock() {
     return -1; 
 }
 
-void freeBlock(uint64_t block_number) {
-    if (block_number < 0 || block_number >= fs->total_blocks) {
+void freeBlock(uint64_t blockNumber) {
+    if (blockNumber < 0 || blockNumber >= fs->totalBlocks) {
         fprintf(stderr, "Invalid block number\n");
         return;
     }
-    fs->fat[block_number] = FREE;  
+    fs->fat[blockNumber] = FREE;  
+    fs->freeBlocks++;
 }
 
-bool isBlockFree(uint64_t block_number) {
-    if (block_number < 0 || block_number >= fs->total_blocks) {
+bool isBlockFree(uint64_t blockNumber) {
+    if (blockNumber < 0 || blockNumber >= fs->totalBlocks) {
         fprintf(stderr, "Invalid block number\n");
         return false;
     }
-    return fs->fat[block_number] == FREE;
+    return fs->fat[blockNumber] == FREE;
 }
