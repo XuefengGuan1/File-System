@@ -55,12 +55,12 @@ int initFileSystem (uint64_t numberOfBlocks, uint64_t blockSize)
     
         vcb.blockSize = blockSize;
         vcb.volumeSignature = 0xFFFF; // unique signature
-        vcb.rootDirectoryLocation = 3; // block 0 is vcb and block 1 is fat
+        vcb.rootDirectoryLocation = 2; // block 0 is vcb and block 1 is fat
         vcb.volumeSize = numberOfBlocks * blockSize;
-        vcb.fatTableLocation = 2; // FAT is block 1, vcb is 0, root is 2
+        vcb.fatTableLocation = 1; // FAT is block 1, vcb is 0, root is 2
     
         // write VCB to disk
-        if(LBAwrite(&vcb,1,1) != 1) {
+        if(LBAwrite(&vcb,1,0) != 1) {
     
             printf("Error: Failed to write VCB to disk\n");
         }
