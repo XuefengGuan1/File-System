@@ -8,13 +8,13 @@ void createRootDir(int blockSize)
 {
     int byteNeeded = sizeof(rootDir) * DIRECTORY_ENTRY_NUMBER;
     int blockNeeded = (byteNeeded + blockSize - 1) / blockSize;
-    DirectoryEntry entries[blockNeeded];
-    for (int i = 0; i < blockNeeded; i++)
+    DirectoryEntry entries[DIRECTORY_ENTRY_NUMBER];
+    for (int i = 0; i < DIRECTORY_ENTRY_NUMBER; i++)
     {
         entries[i].isOccupied = 0;
     }
     // change later
-    //  location = allocateBlocks();
+    // location = allocateBlocks();
 
     // Init the .
     strcpy(entries[0].name, ".");
@@ -26,6 +26,7 @@ void createRootDir(int blockSize)
     entries[0].size = byteNeeded;
     // entries[0].location = location;
 
+    //This only works for the root directory, child directory needs to point to its parent
     // Init the ..
     strcpy(entries[1].name, "..");
     entries[1].isDirect = 1;
