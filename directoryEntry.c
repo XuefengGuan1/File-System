@@ -2,21 +2,39 @@
 #include <stdio.h>
 #include "freespace.h"
 
-DirectoryEntry dir;
+DirectoryEntry rootDir;
 
-void createRootDir(int blockSize, int isRoot)
+void createRootDir(int blockSize)
 {
-    int byteNeeded = sizeof(dir) * DIRECTORY_ENTRY_NUMBER;
+    int byteNeeded = sizeof(rootDir) * DIRECTORY_ENTRY_NUMBER;
     int blockNeeded = (byteNeeded + blockSize - 1) / blockSize;
     DirectoryEntry entries[blockNeeded];
-    for(int i = 0; i < blockNeeded; i++){
+    for (int i = 0; i < blockNeeded; i++)
+    {
         entries[i].isOccupied = 0;
-        
     }
-    allocateBlocks();
+    // change later
+    //  location = allocateBlocks();
 
-    //Init the . and ..
-    entries[0]
+    // Init the .
+    strcpy(entries[0].name, ".");
+    entries[0].isDirect = 1;
+    entries[0].isOccupied = 1;
+    time(&entries[0].creationTime);
+    time(&entries[0].modificationTime);
+    time(&entries[0].accessTime);
+    entries[0].size = byteNeeded;
+    // entries[0].location = location;
+
+    // Init the ..
+    strcpy(entries[1].name, "..");
+    entries[1].isDirect = 1;
+    entries[1].isOccupied = 1;
+    time(&entries[1].creationTime);
+    time(&entries[1].modificationTime);
+    time(&entries[1].accessTime);
+    entries[1].size = byteNeeded;
+    // entries[1].location = location;
 }
 
 // rootDir = createDir(50, NULL);
