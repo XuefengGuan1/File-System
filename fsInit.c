@@ -111,3 +111,28 @@ void exitFileSystem ()
     {
         printf ("System exiting\n");
     }
+
+/* 
+
+If the root dir isn't initialzed, replace starting line 92 to return newDir with
+
+    // root directory
+    strcpy(newDir[0].name, ".");
+    newDir[0].isDir = 1;
+    newDir[0].creationTime = curTime;
+    newDir[0].modificationTime = curTime;
+    newDir[0].accessTime = curTime;
+    newDir[0].size = totalEntries * sizeof(DirectoryEntry);
+    newDir[0].location = newLocation;
+
+    // parent directory
+    strcpy(newDir[1].name, "..");
+    newDir[1].isDir = 1;
+    newDir[1].creationTime = curTime;
+    newDir[1].modificationTime = curTime;
+    newDir[1].accessTime = curTime;
+    newDir[1].size = totalEntries * sizeof(DirectoryEntry);
+    newDir[1].location = (parent == NULL) ? newLocation : parent->location;
+
+    return newDir;
+*/
