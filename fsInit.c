@@ -67,8 +67,19 @@ int initFileSystem (uint64_t numberOfBlocks, uint64_t blockSize)
     
         return 0;
         }
+struct DirectoryEntry* rootDir = createDir(50, NULL);
+    if (rootDir == NULL) {
+        printf("Error: Failed to create root directory\n");
+        return -1;
+    }
 
-struct DriectoryEntry;
+    // Write root directory to disk
+    int numBlocks = (50 * sizeof(struct DirectoryEntry) + blockSize - 1) / blockSize;
+    if (LBAwrite(rootDir, numBlocks, vcb.rootDirectoryLocation) != numBlocks) {
+        printf("Error: Failed to write root directory to disk\n");
+        free(rootDir);
+        return -1;
+    }
 
 DirectoryEntry* createDir(int minEntries, DirectoryEntry* parent)
 {
@@ -134,5 +145,6 @@ If the root dir isn't initialzed, replace starting line 92 to return newDir with
     newDir[1].size = totalEntries * sizeof(DirectoryEntry);
     newDir[1].location = (parent == NULL) ? newLocation : parent->location;
 
-    return newDir;
+    return newDir
+
 */
