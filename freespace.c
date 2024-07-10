@@ -1,6 +1,6 @@
 /**************************************************************
-* Class::  CSC-415-0# Spring 2024
-* Name::
+* Class::  CSC-415-02 Spring 2024
+* Name::Inderpaul Bhander
 * Student IDs::
 * GitHub-Name::
 * Group-Name::
@@ -31,31 +31,39 @@ void initializeFreeSpace(Freespace *fs) {
     fs->fat[2] = -1;
     fs->freeBlocks = fs->totalBlocks-3;
 }
-int allocateBlock() {
-    for (int i = 0; i < fs->totalBlocks; i++) {
-        if (fs->fat[i] == FREE) { 
-            fs->fat[i] = -1;  
+
+int allocateBlocks(uint64_t *block_numbers, uint64_t count) {
+    uint64_t allocated_count = 0;
+
+    for (uint64_t i = 0; i < fs->totalBlocks && allocated_count < count; i++) {
+        if (fs->fat[i] == FREE) {
+            block_numbers[allocated_count++] = i;
             fs->freeBlocks--;
-            return i;
         }
     }
-    fprintf(stderr, "No free blocks available\n");
-    return -1; 
-}
 
-void freeBlock(uint64_t blockNumber) {
-    if (blockNumber < 0 || blockNumber >= fs->totalBlocks) {
-        fprintf(stderr, "Invalid block number\n");
-        return;
+    for (uint64_t i = 0; i < count; i++) {
+        fs->fat[block_numbers[i]] = (i == count - 1) ? END_OF_CHAIN : block_numbers[i + 1];
+        fs->freeBlocks--;
     }
-    fs->fat[blockNumber] = FREE;  
-    fs->freeBlocks++;
+
+    return 0;  
 }
 
-bool isBlockFree(uint64_t blockNumber) {
-    if (blockNumber < 0 || blockNumber >= fs->totalBlocks) {
+void freeBlocks(uint64_t start_block) {
+    uint64_t current_block = start_block;
+    while (current_block != END_OF_CHAIN) {
+        uint64_t next_block = fs->fat[current_block];
+        fs->fat[current_block] = FREE;
+        current_block = next_block;
+        fs->freeBlocks++;
+    }
+}
+
+bool isBlockFree(uint64_t block_number) {
+    if (block_number < 0 || block_number >= fs->totalBlocks) {
         fprintf(stderr, "Invalid block number\n");
         return false;
     }
-    return fs->fat[blockNumber] == FREE;
+    return fs->fat[block_number] == FREE;
 }
