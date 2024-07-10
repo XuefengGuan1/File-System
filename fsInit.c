@@ -25,7 +25,6 @@
 
 struct VolumeControlBlock
 {
-
     unsigned int blockSize;
     unsigned int volumeSignature;
     unsigned int rootDirectoryLocation;
