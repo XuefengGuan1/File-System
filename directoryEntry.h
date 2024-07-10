@@ -1,20 +1,23 @@
-#ifndef DIRECTORYENTRY.H
-#define DIRECTORYENTRY.H
+#ifndef DIRECTORYENTRY_H
+#define DIRECTORYENTRY_H
 
 #include <time.h>
 
+#define DIRECTORY_ENTRY_NUMBER 56
 
-struct DirectoryEntry
+typedef struct DirectoryEntry
 {
-    char name[31];           // File name 31 bytes
-    char isDirect;           // Check if is a directory 1 byte
-    time_t creationTime;     // Creation time 8 bytes
-    time_t modificationTime; // Last modification time 8 bytes
-    time_t accessTime;       // Last access time 8 bytes
-    unsigned int size;       // File size in bytes 4 bytes
-    unsigned int location;   // Starting block of the file on the disk 4 bytes
-};
+    char name[30];           // File name              31 bytes
+    char isDirect;           // Check if is a directory       1 byte
+    char isOccupied;          // Check if the directory is occupied    1byte
+    time_t creationTime;     // Creation time             8 bytes
+    time_t modificationTime; // Last modification time       8 bytes
+    time_t accessTime;       // Last access time        8 bytes
+    unsigned int size;       // File size in bytes          4 bytes
+    unsigned int location;   // Starting block of the file on the disk   4 bytes
+} DirectoryEntry;
 
-DirectoryEntry *createDir(int, DirectoryEntry *);
+void createRootDir(int blockSize, int isRoot);
+//DirectoryEntry *createDir(int, DirectoryEntry *);
 
 #endif
