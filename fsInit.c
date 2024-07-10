@@ -20,9 +20,11 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <time.h>
 #include "fsLow.h"
 #include "mfs.h"
+
+
 
  struct VolumeControlBlock {
     
@@ -32,6 +34,17 @@
         unsigned int volumeSize;
         unsigned int fatTableLocation;
     };
+struct DirectoryEntry{
+    char name[31]; // File name 31 bytes
+    char isDirect; //Check if is a directory 1 byte
+    time_t creationTime; // Creation time 8 bytes
+    time_t modificationTime; // Last modification time 8 bytes
+    time_t accessTime; // Last access time 8 bytes
+    unsigned int size; // File size in bytes 4 bytes
+    unsigned int location; // Starting block of the file on the disk 4 bytes
+}
+
+
     
 struct VolumeControlBlock vcb;
     
@@ -54,8 +67,46 @@ int initFileSystem (uint64_t numberOfBlocks, uint64_t blockSize)
     
         return 0;
         }
+
+struct DriectoryEntry;
+
+DirectoryEntry* createDir(int minEntries, DirectoryEntry* parent)
+{
+    int byteNeeded = minEntries * sizeof(DirectoryEntry);
+    int blockNeeded = (byteNeeded + vcb.blockSize -1) / vcb.blockSize;
+    int byteToAllocate = blockNeeded + vcb.blockSize;
+
+    DirectoryEntry* newDir = malloc(byteToAllocate);
+    int totalEntries = byteToAllocate / sizeof(DirectoryEntry);
+
+    for (int i=2; i<totalEntries; i++)
+    {
+        size=0;
+        location = vcb.rootDirectoryLocation;
+        name[0] = "\0" //name sub zero is null character
+    }
     
-    
+    int newLocation = fsallocate(blockNeeded); // adjust the parameter according to Freespace parameters
+
+    time_t curTime = time();
+    DirectoryEntry[0].location = newLocation;
+    DirectoryEntry[0].size = totalEntries * sizeof(DirectoryEntry)
+    strcpy(newDir[0].name, ".");
+    newDir[0]. isDir = true;
+    newDir[0]. creationTime = curTime;
+    newDir[0]. modificationTime = curTime;
+    newDir[0]. accessTime = curTime;
+
+    DirectoryEntry* prntDir == parent;
+    if (prntDir == NULL)
+    {
+        prntDir = newDir;
+    }
+
+    memcpy(&newDir[i].name, ".." );
+    return newDir;
+}
+
 void exitFileSystem ()
     {
         printf ("System exiting\n");
