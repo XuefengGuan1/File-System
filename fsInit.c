@@ -22,18 +22,7 @@
 #include <time.h>
 #include "fsLow.h"
 #include "mfs.h"
-
-struct VolumeControlBlock
-{
-
-    unsigned int blockSize;
-    unsigned int volumeSignature;
-    unsigned int rootDirectoryLocation;
-    unsigned int volumeSize;
-    unsigned int fatTableLocation;
-};
-
-struct VolumeControlBlock vcb;
+#include "vcb.h"
 
 int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 {
