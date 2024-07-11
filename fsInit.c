@@ -69,12 +69,21 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 
 // Check vcb signature to verify volume initialzation
     	// return 0 if already initialized
-    	if(vcbPtr->volumeSignature == VOLUME_SIG) {
+    if(vcbPtr->volumeSignature == VOLUME_SIG) {
    
-        	printf("Volume is already initialized");
-        	free(vcbPtr);
-        	return 0;
-    	}
+       	printf("Volume is already initialized");
+       	free(vcbPtr);
+       	return 0;
+   	}
+
+    free(vcbPtr);
+
+    if(initialization(volumeSize, blockSize)  != 0) {
+
+        printf("error");
+        return -1;
+    }
+
     return 0;
 }
 
