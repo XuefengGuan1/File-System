@@ -32,6 +32,16 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     printf("Initializing File System with %ld blocks with a block size of %ld\n", numberOfBlocks, blockSize);
     /* TODO: Add any code you need to initialize your file system. */
 
+    uint64_t volumeSize = numberOfBlocks * blockSize;
+    char *filename = "File-System";
+
+    // start
+    if(startPartitionSystem(filename, &volumeSize, &blockSize) != 0) {
+
+        printf("Error: Failed to start");
+        return -1;
+    }
+
     // alocate memory for vcb pointer
     struct VolumeControlBlock *vcbPtr = malloc(sizeof(struct VolumeControlBlock));
 
@@ -57,19 +67,13 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
         	return 0;
     	}
 
-    vcb.blockSize = blockSize;
-    vcb.volumeSignature = VOLUME_SIG;  // unique signature
-    vcb.rootDirectoryLocation = 2; // block 0 is vcb and block 1 is fat
-    vcb.volumeSize = numberOfBlocks * blockSize;
-    vcb.fatTableLocation = 1; // FAT is block 1, vcb is 0, root is 2
-
     createRootDir(blockSize);
 
-    // write VCB to disk
-    if (LBAwrite(&vcb, 1, 0) != 1)
-    {
+    // VCB initialization
+    if(initialization(volumeSize, blockSize) != 0) {
 
-        printf("Error: Failed to write VCB to disk\n");
+        printf("Error: Failed to initialize VCB");
+        return -1;
     }
 
     return 0;
