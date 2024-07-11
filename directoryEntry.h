@@ -1,23 +1,23 @@
 /**************************************************************
-* Class::  CSC-415-02 Spring 2024
-* Name::Inderpaul Bhander
-* Student IDs::
-* GitHub-Name::
-* Group-Name::
-* Project:: Basic File System
-*
-* File:: freespace.c
-*
-* Description:: This file contains the functions for managing free
-*   space using a FAT table.
-*
-**************************************************************/
+ * Class::  CSC-415-02 Spring 2024
+ * Name::Inderpaul Bhander
+ * Student IDs::
+ * GitHub-Name::
+ * Group-Name::
+ * Project:: Basic File System
+ *
+ * File:: freespace.c
+ *
+ * Description:: This file contains the functions for managing free
+ *   space using a FAT table.
+ *
+ **************************************************************/
 
 #ifndef DIRECTORYENTRY_H
 #define DIRECTORYENTRY_H
 #endif
 #include <time.h>
-
+#include "fsLow.h"
 
 #define DIRECTORY_ENTRY_NUMBER 56
 
@@ -33,6 +33,5 @@ typedef struct DirectoryEntry
     unsigned int location;   // Starting block of the file on the disk   4 bytes
 } DirectoryEntry;
 
-int createRootDir(int blockSize);
+int createRootDir(int blockSize, uint64_t *ptr);
 // DirectoryEntry *createDir(int, DirectoryEntry *);
-

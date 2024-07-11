@@ -39,8 +39,9 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     char *filename = "File_System";
 
     printf("here runned\n");
-    //start partition
-    if(startPartitionSystem(filename, &volumeSize, &blockSize) != 0) {
+    // start partition
+    if (startPartitionSystem(filename, &volumeSize, &blockSize) != 0)
+    {
 
         printf("Error");
         return -1;
@@ -48,8 +49,9 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 
     printf("here runned1\n");
 
-    fs = (Freespace*)malloc(sizeof(Freespace));
-    if (!fs) {
+    fs = (Freespace *)malloc(sizeof(Freespace));
+    if (!fs)
+    {
         perror("Failed to allocate memory for FileSystem structure");
         closePartitionSystem();
         return -1;
@@ -58,7 +60,8 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     struct VolumeControlBlock *vcbPtr = malloc(sizeof(struct VolumeControlBlock));
     printf("volume control block?\n");
 
-    if(vcbPtr == NULL) {
+    if (vcbPtr == NULL)
+    {
 
         printf("failed?\n");
         printf("Error: Memeory allocation for Volume Control Block Failed\n");
@@ -66,27 +69,36 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     }
     printf("succeed?\n");
     // read block 0 int vcbPtr
-    if(LBAread(vcbPtr, 1, 0) != 1) {
+    if (LBAread(vcbPtr, 1, 0) != 1)
+    {
 
         printf("Error: Failed to read Volume Control Block");
-       	free(vcbPtr);
-       	return -1;
+        free(vcbPtr);
+        return -1;
     }
     printf("did LBAread[0] succeed?\n");
 
-// Check vcb signature to verify volume initialzation
-    	// return 0 if already initialized
-    if(vcbPtr->volumeSignature == VOLUME_SIG) {
-   
-       	printf("Volume is already initialized");
-       	free(vcbPtr);
-       	return 0;
-   	}
-    createRootDir(blockSize);
+    // Check vcb signature to verify volume initialzation
+    // return 0 if already initialized
+    if (vcbPtr->volumeSignature == VOLUME_SIG)
+    {
+
+        printf("Volume is already initialized");
+        free(vcbPtr);
+        return 0;
+    }
+    printf("before malloc?\n");
+    // create root directory
+    int byteNeeded = DIRECTORY_ENTRY_NUMBER * blockSize;
+    int blockNeeded = (byteNeeded + blockSize - 1) / blockSize;
+    uint64_t *block_numbers = (u_int64_t *)malloc(blockNeeded * sizeof(uint64_t));
+    createRootDir(blockSize, block_numbers);
+
     printf("did we create root directory?\n");
     free(vcbPtr);
     printf("free worked?\n");
-    if(initialization(volumeSize, blockSize)  != 0) {
+    if (initialization(volumeSize, blockSize) != 0)
+    {
         printf("initalization function error?\n");
         printf("error");
         return -1;

@@ -23,7 +23,7 @@
 
 DirectoryEntry rootDir;
 
-int createRootDir(int blockSize)  
+int createRootDir(int blockSize, uint64_t* ptr)  
 {
     int byteNeeded = sizeof(rootDir) * DIRECTORY_ENTRY_NUMBER;
     int blockNeeded = (byteNeeded + blockSize - 1) / blockSize;
@@ -40,13 +40,11 @@ int createRootDir(int blockSize)
 
     // int *x = (int*)malloc(5*sizeof(int));
     // printf("debug malloc worked?\n");
-
-    uint64_t *block_numbers = (u_int64_t *)malloc(blockNeeded * sizeof(uint64_t));
     printf("did the malloc work?\n");
 
-    if (block_numbers == NULL || allocateBlocks(block_numbers, blockNeeded) != 0)
+    if (ptr == NULL || allocateBlocks(ptr, blockNeeded) != 0)
     {
-        free(block_numbers);
+        free(ptr);
         printf("Error: Failed to allocate blocks for root directory\n");
         return EXIT_FAILURE;
     }
@@ -59,7 +57,7 @@ int createRootDir(int blockSize)
     time(&entries[0].modificationTime);
     time(&entries[0].accessTime);
     entries[0].size = byteNeeded;
-    entries[0].location = block_numbers[0];
+    entries[0].location = ptr[0];
 
     // This only works for the root directory, child directory needs to point to its parent
     //  Init the ..
@@ -71,12 +69,12 @@ int createRootDir(int blockSize)
     time(&entries[1].modificationTime);
     time(&entries[1].accessTime);
     entries[1].size = byteNeeded;
-    entries[1].location = block_numbers[0];
+    entries[1].location = ptr[0];
 
     for (int i = 0; i < DIRECTORY_ENTRY_NUMBER; i++)
     {
-        LBAwrite(&entries, 1, block_numbers[i]);
-        printf("the current block is: %ld\n", block_numbers[i]);
+        LBAwrite(&entries, 1, ptr[i]);
+        printf("the current block is: %ld\n", ptr[i]);
     }
-    return block_numbers[0];
+    return ptr[0];
 }
