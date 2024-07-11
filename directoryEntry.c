@@ -22,27 +22,37 @@
 #include <stdlib.h>
 
 
+
 DirectoryEntry rootDir;
 
-void createRootDir(int blockSize)
+int createRootDir(int blockSize)
 {
     int byteNeeded = sizeof(rootDir) * DIRECTORY_ENTRY_NUMBER;
     int blockNeeded = (byteNeeded + blockSize - 1) / blockSize;
     DirectoryEntry entries[DIRECTORY_ENTRY_NUMBER];
     for (int i = 0; i < DIRECTORY_ENTRY_NUMBER; i++)
-    {
+    { 
         entries[i].isOccupied = 0;
     }
+
+    printf("did init entries in DE work?\n");
     // Allocating memory for the blocks that are assigned to file/dir in freespace
     // first element of block_numbers will be the start location of any given file
     // or dir. block_numnbers can be used for LBA write of given file or dir.
     uint64_t *block_numbers = (uint64_t *)malloc(blockNeeded * sizeof(uint64_t));
+    printf("did the malloc work?\n");
+    if(block_numbers == NULL){
+        fprintf(stderr, "allocation failed\n");
+        return EXIT_FAILURE;
+    }
+    printf("did the assignment work?\n");
     if (block_numbers == NULL || allocateBlocks(block_numbers, blockNeeded) != 0)
     {
         free(block_numbers);
         printf("Error: Failed to allocate blocks for root directory\n");
-        return;
+        return EXIT_FAILURE;
     }
+    printf("did the allocation run?\n");
     // Init the .
     strcpy(entries[0].name, ".");
     entries[0].isDirect = 1;
@@ -68,7 +78,9 @@ void createRootDir(int blockSize)
     for (int i = 0; i < DIRECTORY_ENTRY_NUMBER; i++)
     {
         LBAwrite(&entries, 1, block_numbers[i]);
+        printf("the current block is: %ld\n", block_numbers[i]);
     }
+    return block_numbers[0];
 }
 
 // rootDir = createDir(50, NULL);

@@ -38,6 +38,7 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     uint64_t volumeSize;
     char *filename = "File_System";
 
+    printf("here runned\n");
     //start partition
     if(startPartitionSystem(filename, &volumeSize, &blockSize) != 0) {
 
@@ -45,21 +46,25 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
         return -1;
     }
 
+    printf("here runned1\n");
+
     fs = (Freespace*)malloc(sizeof(Freespace));
     if (!fs) {
         perror("Failed to allocate memory for FileSystem structure");
         closePartitionSystem();
         return -1;
     }
+    printf("space allocation succeed\n");
     struct VolumeControlBlock *vcbPtr = malloc(sizeof(struct VolumeControlBlock));
+    printf("volume control block?\n");
 
     if(vcbPtr == NULL) {
 
-
+        printf("failed?\n");
         printf("Error: Memeory allocation for Volume Control Block Failed\n");
         return -1;
     }
-
+    printf("succeed?\n");
     // read block 0 int vcbPtr
     if(LBAread(vcbPtr, 1, 0) != 1) {
 
@@ -67,6 +72,7 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
        	free(vcbPtr);
        	return -1;
     }
+    printf("did LBAread[0] succeed?\n");
 
 // Check vcb signature to verify volume initialzation
     	// return 0 if already initialized
@@ -77,8 +83,8 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
        	return 0;
    	}
     createRootDir(blockSize);
+    printf("did we create root directory?\n");
     free(vcbPtr);
-
     if(initialization(volumeSize, blockSize)  != 0) {
 
         printf("error");
