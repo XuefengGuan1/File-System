@@ -23,29 +23,28 @@
 #include "fsLow.h"
 #include "mfs.h"
 #include "vcb.h"
-#include "directoryEntry.h"
-
+#include "freespace.h"
 #define VOLUME_SIG 0xFFFF
+Freespace *fs;
 
 int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 {
     printf("Initializing File System with %ld blocks with a block size of %ld\n", numberOfBlocks, blockSize);
     /* TODO: Add any code you need to initialize your file system. */
 
-    uint64_t volumeSize = numberOfBlocks * blockSize;
-    char *filename = "File-System";
+    // alocate memory for vcb pointer
 
-    // start
-    if(startPartitionSystem(filename, &volumeSize, &blockSize) != 0) {
-
-        printf("Error: Failed to start");
+    fs = (Freespace*)malloc(sizeof(Freespace));
+    if (!fs) {
+        perror("Failed to allocate memory for FileSystem structure");
+        closePartitionSystem();
         return -1;
     }
-
-    // alocate memory for vcb pointer
     struct VolumeControlBlock *vcbPtr = malloc(sizeof(struct VolumeControlBlock));
 
     if(vcbPtr == NULL) {
+
+
         printf("Error: Memeory allocation for Volume Control Block Failed\n");
         return -1;
     }
@@ -67,13 +66,17 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
         	return 0;
     	}
 
-    createRootDir(blockSize);
+    vcb.blockSize = blockSize;
+    vcb.volumeSignature = VOLUME_SIG;  // unique signature
+    vcb.rootDirectoryLocation = 2; // block 0 is vcb and block 1 is fat
+    vcb.volumeSize = numberOfBlocks * blockSize;
+    vcb.fatTableLocation = 1; // FAT is block 1, vcb is 0, root is 2
 
-    // VCB initialization
-    if(initialization(volumeSize, blockSize) != 0) {
+    // write VCB to disk
+    if (LBAwrite(&vcb, 1, 0) != 1)
+    {
 
-        printf("Error: Failed to initialize VCB");
-        return -1;
+        printf("Error: Failed to write VCB to disk\n");
     }
 
     return 0;
