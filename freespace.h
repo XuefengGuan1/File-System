@@ -1,7 +1,13 @@
 #ifndef FREESPACE_H
 #define FREESPACE_H
+<<<<<<< HEAD
 #endif
 
+=======
+#include <stdbool.h>
+typedef uint64_t;
+typedef uint32_t;
+>>>>>>> 2880ba60059f0a4fc5ec92d6904dc250a784f4b8
 #define FREE 0xFFFFFFFF  // A value that indicates a block is free
 #define END_OF_CHAIN 0xFFFFFFFE  // A value that indicates the end of a chain
 #define BLOCK_SIZE 512

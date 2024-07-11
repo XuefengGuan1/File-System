@@ -17,6 +17,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "fsLow.h"
+
 #include "freespace.h"
 #include "fsLow.h"
 

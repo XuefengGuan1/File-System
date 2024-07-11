@@ -37,13 +37,6 @@ int initialization(uint64_t volumeSize, uint64_t blockSize) {
     fs->totalBlocks=volumeSize/blockSize;
     fs->fat = (uint32_t*)malloc(volumeSize*sizeof(uint32_t));
     initializeFreeSpace(fs);
-   
-   	// write VCB to disk
-   	if (LBAwrite(&vcb, 1, 0) != 1)
-	{
-
-       	printf("Error: Failed to write VCB to disk\n");
-   	}
 
     // write vcb to disk
     if(LBAwrite(&vcb, 1, 0) != 1){
