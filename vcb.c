@@ -19,7 +19,7 @@ int initialization(uint64_t volumeSize, uint64_t blockSize) {
    	vcb.volumeSize = volumeSize;
    	vcb.fatTableLocation = 1; // FAT is block 1, vcb is 0, root is 2
    
-    fs->totalBlocks=volumeSize;
+    fs->totalBlocks=volumeSize/blockSize;
     fs->fat = (uint32_t*)malloc(volumeSize*sizeof(uint32_t));
     initializeFreeSpace(fs);
    
