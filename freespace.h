@@ -16,8 +16,10 @@ typedef struct {
 } Freespace;
  
 void initializeFreeSpace(Freespace *fs);
-int allocateBlocks(uint64_t *block_numbers, uint64_t count);
+int allocateBlocks(uint64_t *block_numbers, uint64_t count); 
 void freeBlocks(uint64_t start_block);
 bool isBlockFree(uint64_t block_number);
+int saveFAT();
+int loadFAT();
 
  
