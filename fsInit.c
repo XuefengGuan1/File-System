@@ -58,7 +58,7 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     } 
     fs->totalBlocks= numberOfBlocks;
     // printf("space allocation succeed\n");
-    struct VolumeControlBlock *vcbPtr = malloc(sizeof(struct VolumeControlBlock));
+//    struct VolumeControlBlock *vcbPtr = malloc(sizeof(struct VolumeControlBlock));
     // printf("volume control block?\n");
 
     // if(vcbPtr == NULL) {
@@ -92,7 +92,7 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     }
     createRootDir(blockSize);
     // printf("did we create root directory?\n");
-    free(vcbPtr);
+ //   free(vcbPtr);
     // printf("free worked?\n");
  
 
