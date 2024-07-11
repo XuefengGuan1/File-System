@@ -18,6 +18,8 @@
 #include "freespace.h"
 #include "fsLow.h"
 #include <sys/types.h>
+#include <string.h>
+#include <stdlib.h>
 
 
 DirectoryEntry rootDir;
@@ -54,7 +56,7 @@ void createRootDir(int blockSize)
     // This only works for the root directory, child directory needs to point to its parent
     //  Init the ..
     strncpy(entries[1].name, "..", 29);
-    entries[1].name[29] = "\n";
+    entries[1].name[29] = '\n';
     entries[1].isDirect = 1;
     entries[1].isOccupied = 1;
     time(&entries[1].creationTime);

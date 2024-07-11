@@ -1,17 +1,12 @@
 #ifndef FREESPACE_H
 #define FREESPACE_H
-<<<<<<< HEAD
 #endif
 
-=======
-#include <stdbool.h>
-typedef uint64_t;
-typedef uint32_t;
->>>>>>> 2880ba60059f0a4fc5ec92d6904dc250a784f4b8
 #define FREE 0xFFFFFFFF  // A value that indicates a block is free
 #define END_OF_CHAIN 0xFFFFFFFE  // A value that indicates the end of a chain
 #define BLOCK_SIZE 512
 #include <stdbool.h>
+#include "fsLow.h"
 
 typedef struct {
     uint64_t totalBlocks;
@@ -19,9 +14,10 @@ typedef struct {
     uint32_t fatTablesize;
     uint32_t *fat;  // FAT table
 } Freespace;
-
+ 
 void initializeFreeSpace(Freespace *fs);
 int allocateBlocks(uint64_t *block_numbers, uint64_t count);
 void freeBlocks(uint64_t start_block);
 bool isBlockFree(uint64_t block_number);
 
+ 
