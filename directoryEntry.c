@@ -1,6 +1,7 @@
 #include "directoryEntry.h"
 #include <stdio.h>
 #include "freespace.h"
+#include "fsLow.h"
 
 DirectoryEntry rootDir;
 
@@ -23,11 +24,11 @@ void createRootDir(int blockSize)
     time(&entries[0].creationTime);
     time(&entries[0].modificationTime);
     time(&entries[0].accessTime);
-    entries[0].size = byteNeeded;
+    entries[0].size = sizeof(rootDir);
     // entries[0].location = location;
 
-    //This only works for the root directory, child directory needs to point to its parent
-    // Init the ..
+    // This only works for the root directory, child directory needs to point to its parent
+    //  Init the ..
     strcpy(entries[1].name, "..");
     entries[1].isDirect = 1;
     entries[1].isOccupied = 1;
@@ -36,6 +37,9 @@ void createRootDir(int blockSize)
     time(&entries[1].accessTime);
     entries[1].size = byteNeeded;
     // entries[1].location = location;
+
+    LBAread (&entries, blockNeeded, );
+
 }
 
 // rootDir = createDir(50, NULL);

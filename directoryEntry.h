@@ -1,6 +1,6 @@
 #ifndef DIRECTORYENTRY_H
 #define DIRECTORYENTRY_H
-
+#endif
 #include <time.h>
 
 #define DIRECTORY_ENTRY_NUMBER 56
@@ -9,7 +9,7 @@ typedef struct DirectoryEntry
 {
     char name[30];           // File name              31 bytes
     char isDirect;           // Check if is a directory       1 byte
-    char isOccupied;          // Check if the directory is occupied    1byte
+    char isOccupied;         // Check if the directory is occupied    1byte
     time_t creationTime;     // Creation time             8 bytes
     time_t modificationTime; // Last modification time       8 bytes
     time_t accessTime;       // Last access time        8 bytes
@@ -18,6 +18,5 @@ typedef struct DirectoryEntry
 } DirectoryEntry;
 
 void createRootDir(int blockSize);
-//DirectoryEntry *createDir(int, DirectoryEntry *);
+// DirectoryEntry *createDir(int, DirectoryEntry *);
 
-#endif
