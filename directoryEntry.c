@@ -23,7 +23,7 @@
 
 DirectoryEntry rootDir;
 
-int createRootDir(int blockSize)
+int createRootDir(int blockSize)  
 {
     int byteNeeded = sizeof(rootDir) * DIRECTORY_ENTRY_NUMBER;
     int blockNeeded = (byteNeeded + blockSize - 1) / blockSize;
