@@ -89,10 +89,6 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     }
     printf("before malloc?\n");
     // create root directory
-    int byteNeeded = DIRECTORY_ENTRY_NUMBER * blockSize;
-    int blockNeeded = (byteNeeded + blockSize - 1) / blockSize;
-    uint64_t *block_numbers = (u_int64_t *)malloc(blockNeeded * sizeof(uint64_t));
-    createRootDir(blockSize, block_numbers);
 
     printf("did we create root directory?\n");
     free(vcbPtr);
@@ -103,6 +99,11 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
         printf("error");
         return -1;
     }
+    printf("did it go to the end??\n");
+    int byteNeeded = DIRECTORY_ENTRY_NUMBER * blockSize;
+    int blockNeeded = (byteNeeded + blockSize - 1) / blockSize;
+    int *x = (int *)malloc(1 * sizeof(int));
+    createRootDir(blockSize, x);
 
     return 0;
 }

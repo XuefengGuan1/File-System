@@ -25,6 +25,7 @@ DirectoryEntry rootDir;
 
 int createRootDir(int blockSize, uint64_t* ptr)  
 {
+    printf("went in here?\n");
     int byteNeeded = sizeof(rootDir) * DIRECTORY_ENTRY_NUMBER;
     int blockNeeded = (byteNeeded + blockSize - 1) / blockSize;
     DirectoryEntry entries[DIRECTORY_ENTRY_NUMBER];
