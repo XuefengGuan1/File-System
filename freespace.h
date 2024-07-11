@@ -1,5 +1,6 @@
 #ifndef FREESPACE_H
 #define FREESPACE_H
+#include <stdbool.h>
 typedef uint64_t;
 typedef uint32_t;
 #define FREE 0xFFFFFFFF  // A value that indicates a block is free
