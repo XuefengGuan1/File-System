@@ -6,10 +6,9 @@
 * Group-Name::
 * Project:: Basic File System
 *
-* File:: freespace.c
+* File:: vcb.h
 *
-* Description:: This file contains the functions for managing free
-*   space using a FAT table.
+* Description:: Header file for volume control block
 *
 **************************************************************/
 
