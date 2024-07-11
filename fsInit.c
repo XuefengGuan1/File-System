@@ -34,6 +34,16 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 
     // alocate memory for vcb pointer
 
+    uint64_t volumeSize;
+    char *filename = "File_System";
+
+    //start partition
+    if(startPartitionSystem(filename, &volumeSize, &blockSize) != 0) {
+
+        printf("Error");
+        return -1;
+    }
+
     fs = (Freespace*)malloc(sizeof(Freespace));
     if (!fs) {
         perror("Failed to allocate memory for FileSystem structure");
@@ -65,20 +75,6 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
         	free(vcbPtr);
         	return 0;
     	}
-
-    vcb.blockSize = blockSize;
-    vcb.volumeSignature = VOLUME_SIG;  // unique signature
-    vcb.rootDirectoryLocation = 2; // block 0 is vcb and block 1 is fat
-    vcb.volumeSize = numberOfBlocks * blockSize;
-    vcb.fatTableLocation = 1; // FAT is block 1, vcb is 0, root is 2
-
-    // write VCB to disk
-    if (LBAwrite(&vcb, 1, 0) != 1)
-    {
-
-        printf("Error: Failed to write VCB to disk\n");
-    }
-
     return 0;
 }
 
