@@ -6,10 +6,10 @@
 * Group-Name::
 * Project:: Basic File System
 *
-* File:: freespace.c
+* File:: vcb.c
 *
-* Description:: This file contains the functions for managing free
-*   space using a FAT table.
+* Description:: Initialize the volume control block
+* call free space, and then write the vcb to disk               
 *
 **************************************************************/
 
