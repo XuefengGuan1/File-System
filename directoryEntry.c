@@ -19,7 +19,7 @@
 #include "fsLow.h"
 #include <sys/types.h>
 #include <string.h>
-#include <stdlib.h>x
+#include <stdlib.h>
 
 DirectoryEntry rootDir;
 
@@ -42,7 +42,7 @@ int createRootDir(int blockSize)
     // printf("debug malloc worked?\n");
 
     uint64_t *block_numbers = (u_int64_t *)malloc(blockNeeded * sizeof(uint64_t));
-    printf("did the malloc work?\n");
+    // printf("did the malloc work?\n");
 
     if (block_numbers == NULL || allocateBlocks(block_numbers, blockNeeded) != 0)
     {
@@ -50,7 +50,7 @@ int createRootDir(int blockSize)
         printf("Error: Failed to allocate blocks for root directory\n");
         return EXIT_FAILURE;
     }
-    printf("did the allocation run?\n");
+    // printf("did the allocation run?\n");
     // Init the .
     strcpy(entries[0].name, ".");
     entries[0].isDirect = 1;
@@ -73,7 +73,7 @@ int createRootDir(int blockSize)
     entries[1].size = byteNeeded;
     entries[1].location = block_numbers[0];
 
-    for (int i = 0; i < DIRECTORY_ENTRY_NUMBER; i++)
+    for (int i = 0; i < blockNeeded; i++)
     {
         LBAwrite(&entries, 1, block_numbers[i]);
         printf("the current block is: %ld\n", block_numbers[i]);

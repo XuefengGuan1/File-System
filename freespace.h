@@ -12,7 +12,7 @@ typedef struct {
     uint64_t totalBlocks;
     uint64_t freeBlocks;
     uint32_t fatTablesize;
-    uint32_t *fat;  // FAT table
+    uint32_t fat[19531];  // FAT table
 } Freespace;
  
 void initializeFreeSpace(Freespace *fs);
