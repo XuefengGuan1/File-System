@@ -24,13 +24,42 @@
 #include "mfs.h"
 #include "vcb.h"
 
+#define VOLUME_SIG 0xFFFF
+
 int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 {
     printf("Initializing File System with %ld blocks with a block size of %ld\n", numberOfBlocks, blockSize);
     /* TODO: Add any code you need to initialize your file system. */
 
+    // alocate memory for vcb pointer
+    struct VolumeControlBlock *vcbPtr = malloc(sizeof(struct VolumeControlBlock));
+
+    if(vcbPtr == NULL) {
+
+
+        printf("Error: Memeory allocation for Volume Control Block Failed\n");
+        return -1;
+    }
+
+    // read block 0 int vcbPtr
+    if(LBAread(vcbPtr, 1, 0) != 1) {
+
+        printf("Error: Failed to read Volume Control Block");
+       	free(vcbPtr);
+       	return -1;
+    }
+
+// Check vcb signature to verify volume initialzation
+    	// return 0 if already initialized
+    	if(vcbPtr->volumeSignature == VOLUME_SIG) {
+   
+        	printf("Volume is already initialized");
+        	free(vcbPtr);
+        	return 0;
+    	}
+
     vcb.blockSize = blockSize;
-    vcb.volumeSignature = 0xFFFF;  // unique signature
+    vcb.volumeSignature = VOLUME_SIG;  // unique signature
     vcb.rootDirectoryLocation = 2; // block 0 is vcb and block 1 is fat
     vcb.volumeSize = numberOfBlocks * blockSize;
     vcb.fatTableLocation = 1; // FAT is block 1, vcb is 0, root is 2
