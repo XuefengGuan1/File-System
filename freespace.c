@@ -44,6 +44,7 @@ void initializeFreeSpace(Freespace *fs) {
 // iterate through fat table to find free blocks and provide startblock
 // to calling function. link blocks in fat table.
 int allocateBlocks(uint64_t *block_numbers, uint64_t count) {
+    printf("did the allocation function run?\n");
     uint64_t allocated_count = 0;
 
     for (uint64_t i = 0; i < fs->totalBlocks && allocated_count < count; i++) {

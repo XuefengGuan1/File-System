@@ -39,13 +39,9 @@ int createRootDir(int blockSize)
     // Allocating memory for the blocks that are assigned to file/dir in freespace
     // first element of block_numbers will be the start location of any given file
     // or dir. block_numnbers can be used for LBA write of given file or dir.
-    uint64_t *block_numbers = (uint64_t *)malloc(blockNeeded * sizeof(uint64_t));
+    uint64_t *block_numbers = (int *)malloc(blockNeeded * sizeof(int));
     printf("did the malloc work?\n");
-    if(block_numbers == NULL){
-        fprintf(stderr, "allocation failed\n");
-        return EXIT_FAILURE;
-    }
-    printf("did the assignment work?\n");
+
     if (block_numbers == NULL || allocateBlocks(block_numbers, blockNeeded) != 0)
     {
         free(block_numbers);
