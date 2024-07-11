@@ -36,8 +36,6 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     struct VolumeControlBlock *vcbPtr = malloc(sizeof(struct VolumeControlBlock));
 
     if(vcbPtr == NULL) {
-
-
         printf("Error: Memeory allocation for Volume Control Block Failed\n");
         return -1;
     }
