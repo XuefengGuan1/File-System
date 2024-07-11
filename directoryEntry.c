@@ -1,7 +1,24 @@
+/**************************************************************
+ * Class::  CSC-415-02 Spring 2024
+ * Name::Inderpaul Bhander
+ * Student IDs::
+ * GitHub-Name::
+ * Group-Name::
+ * Project:: Basic File System
+ *
+ * File:: freespace.c
+ *
+ * Description:: This file contains the functions for managing free
+ *   space using a FAT table.
+ *
+ **************************************************************/
+
 #include "directoryEntry.h"
 #include <stdio.h>
 #include "freespace.h"
 #include "fsLow.h"
+#include <sys/types.h>
+
 
 DirectoryEntry rootDir;
 
@@ -36,7 +53,8 @@ void createRootDir(int blockSize)
 
     // This only works for the root directory, child directory needs to point to its parent
     //  Init the ..
-    strcpy(entries[1].name, "..");
+    strncpy(entries[1].name, "..", 29);
+    entries[1].name[29] = "\n";
     entries[1].isDirect = 1;
     entries[1].isOccupied = 1;
     time(&entries[1].creationTime);

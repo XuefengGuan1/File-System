@@ -20,6 +20,7 @@
 #include "fsLow.h"
 
 #include "freespace.h"
+#include "fsLow.h"
 
 extern Freespace *fs;
 
