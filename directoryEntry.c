@@ -17,6 +17,8 @@
 #include <stdio.h>
 #include "freespace.h"
 #include "fsLow.h"
+#include <sys/types.h>
+
 
 DirectoryEntry rootDir;
 
