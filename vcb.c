@@ -16,13 +16,6 @@ int initialization(uint64_t volumeSize, uint64_t blockSize) {
    	vcb.volumeSize = volumeSize;
    	vcb.fatTableLocation = 1; // FAT is block 1, vcb is 0, root is 2
 
-   	// write VCB to disk
-   	if (LBAwrite(&vcb, 1, 0) != 1)
-	{
-
-       	printf("Error: Failed to write VCB to disk\n");
-   	}
-
     // write vcb to disk
     if(LBAwrite(&vcb, 1, 0) != 1){
 
