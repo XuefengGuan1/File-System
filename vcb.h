@@ -1,3 +1,18 @@
+/**************************************************************
+* Class::  CSC-415-02 Spring 2024
+* Name::Inderpaul Bhander
+* Student IDs::
+* GitHub-Name::
+* Group-Name::
+* Project:: Basic File System
+*
+* File:: freespace.c
+*
+* Description:: This file contains the functions for managing free
+*   space using a FAT table.
+*
+**************************************************************/
+
 // VCB header file
 #ifndef VCB_H
 #define VCB_H

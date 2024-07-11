@@ -18,6 +18,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "freespace.h"
+#include "fsLow.h"
 
 extern Freespace *fs;
 
