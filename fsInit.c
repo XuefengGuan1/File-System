@@ -32,6 +32,8 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     printf("Initializing File System with %ld blocks with a block size of %ld\n", numberOfBlocks, blockSize);
     /* TODO: Add any code you need to initialize your file system. */
 
+    unsigned int volumeSize = numberOfBlocks * blockSize;
+
     // alocate memory for vcb pointer
     struct VolumeControlBlock *vcbPtr = malloc(sizeof(struct VolumeControlBlock));
 
@@ -58,6 +60,16 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
         	free(vcbPtr);
         	return 0;
     	}
+
+    createRootDir(blockSize);
+
+    // VCB initialization
+    if(initialization(volumeSize, blockSize) != 0) {
+
+        printf("Error: Failed to initialize VCB");
+        return -1;
+    }
+
     return 0;
 }
 
