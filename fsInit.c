@@ -30,6 +30,8 @@ Freespace *fs;
 
 int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 {
+    char testBUffer[10]="fuck";
+    LBAwrite(testBUffer, 1,0);
     printf("Initializing File System with %ld blocks with a block size of %ld\n", numberOfBlocks, blockSize);
     /* TODO: Add any code you need to initialize your file system. */
 
