@@ -85,8 +85,9 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     createRootDir(blockSize);
     printf("did we create root directory?\n");
     free(vcbPtr);
+    printf("free worked?\n");
     if(initialization(volumeSize, blockSize)  != 0) {
-
+        printf("initalization function error?\n");
         printf("error");
         return -1;
     }

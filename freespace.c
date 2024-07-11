@@ -27,6 +27,7 @@ extern Freespace *fs;
 // FREE macro defined in freespace.h. Value of -1 for reserved blocks
 // takes into account if FAT size is larger then one block.
 void initializeFreeSpace(Freespace *fs) {
+    printf("did the freespace function run?\n");
     fs->fatTablesize = (fs->totalBlocks * sizeof(uint32_t) + BLOCK_SIZE - 1) / BLOCK_SIZE;
     for (int i = 0; i < fs->totalBlocks; i++) {
         fs->fat[i] = FREE;  
