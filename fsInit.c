@@ -24,6 +24,7 @@
 #include "mfs.h"
 #include "vcb.h"
 #include "freespace.h"
+#include "directoryEntry.h"
 #define VOLUME_SIG 0xFFFF
 Freespace *fs;
 
@@ -75,7 +76,7 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
        	free(vcbPtr);
        	return 0;
    	}
-
+    createRootDir(blockSize);
     free(vcbPtr);
 
     if(initialization(volumeSize, blockSize)  != 0) {
