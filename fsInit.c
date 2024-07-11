@@ -23,6 +23,7 @@
 #include "fsLow.h"
 #include "mfs.h"
 #include "vcb.h"
+#include "directoryEntry.h"
 
 int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 {
@@ -34,6 +35,8 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     vcb.rootDirectoryLocation = 2; // block 0 is vcb and block 1 is fat
     vcb.volumeSize = numberOfBlocks * blockSize;
     vcb.fatTableLocation = 1; // FAT is block 1, vcb is 0, root is 2
+
+    createRootDir(blockSize);
 
     // write VCB to disk
     if (LBAwrite(&vcb, 1, 0) != 1)
