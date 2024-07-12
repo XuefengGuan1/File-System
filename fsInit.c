@@ -40,7 +40,7 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 
     // printf("here runned\n");
     //start partition
-    if(startPartitionSystem(filename, &volumeSize, &blockSize) != 0) {
+    if(startPartitionSystem(filename, &numberOfBlocks, &blockSize) != 0) {
 
         printf("Error");
         return -1;
@@ -54,6 +54,7 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
         closePartitionSystem();
         return -1;
     } 
+  
     fs->totalBlocks= numberOfBlocks;
     // printf("space allocation succeed\n");
 //    struct VolumeControlBlock *vcbPtr = malloc(sizeof(struct VolumeControlBlock));

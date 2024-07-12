@@ -73,10 +73,10 @@ int createRootDir(int blockSize)
     entries[1].size = byteNeeded;
     entries[1].location = block_numbers[0];
 
-    // for (int i = 0; i < blockNeeded; i++)
-    // {
-    //     LBAwrite(&entries, 1, block_numbers[i]);
-    //     printf("the current block is: %d\n", i);
-    // }
+    for (int i = 3; i < 10; i++)
+    {
+        LBAwrite(&entries, 1, i);
+        printf("the current block is: %d\n", i);
+    }
     return block_numbers[0];
 }

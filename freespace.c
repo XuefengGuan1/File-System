@@ -33,6 +33,7 @@ void initializeFreeSpace(Freespace *fs) {
         fs->fat[i] = FREE;  
     }
     fs->fat[0] = -1;
+    fs->fat[1] = -1;
     fs->freeBlocks = fs->totalBlocks-1;  
     for (uint64_t i = 1; i <= fs->fatTablesize; i++) {
         fs->fat[i] = -1;
@@ -81,13 +82,15 @@ bool isBlockFree(uint64_t block_number) {
 }
 
 int saveFAT() {
- 
-    if (LBAwrite(fs->fat, 1, 1) != fs->fatTablesize) {  
+     uint64_t fatSize = (fs->totalBlocks * sizeof(uint32_t) + BLOCK_SIZE - 1) / BLOCK_SIZE;  // Number of blocks the FAT table occupies
+    printf("Saving FAT to disk, size in blocks: %lu\n", fatSize);  // Debug print
+    if (LBAwrite(fs->fat, fatSize, 1) != fatSize) {  // Assuming FAT starts at block 1
         perror("Failed to write FAT to disk");
         return -1;
     }
     return 0;
 }
+
 
 int loadFAT() {
     fs->fatTablesize = (fs->totalBlocks * sizeof(uint32_t) + BLOCK_SIZE - 1) / BLOCK_SIZE;  

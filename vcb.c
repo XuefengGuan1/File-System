@@ -48,5 +48,6 @@ int initialization(uint64_t volumeSize, uint64_t blockSize) {
         return -1;
     }
 
+
     return 0;
 }
