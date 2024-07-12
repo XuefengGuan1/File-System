@@ -22,7 +22,7 @@
 typedef u_int64_t uint64_t;
 #endif
 
-struct VolumeControlBlock {
+typedef struct VolumeControlBlock {
 
     unsigned int blockSize;
     unsigned int volumeSignature;
@@ -30,9 +30,8 @@ struct VolumeControlBlock {
     unsigned int volumeSize;
     unsigned int fatTableLocation;
 
-};
+}VolumeControlBlock;
 
-extern struct VolumeControlBlock vcb;
 
 // vcb initialziation function
 int initialization(uint64_t volumeSize, uint64_t blockSize);

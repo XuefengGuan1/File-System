@@ -27,21 +27,12 @@ extern Freespace *fs;
 struct VolumeControlBlock vcb;
 
 int initialization(uint64_t volumeSize, uint64_t blockSize) {
-    // printf("initilzation function runned?\n");
     vcb.blockSize = blockSize;
   	vcb.volumeSignature = VOLUME_SIG;  // unique signature
    	vcb.rootDirectoryLocation = 2; // block 0 is vcb and block 1 is fat
    	vcb.volumeSize = volumeSize;
    	vcb.fatTableLocation = 1; // FAT is block 1, vcb is 0, root is 2
-
-    // printf("vcb initializd?\n");
-    // fs->totalBlocks=volumeSize/blockSize;
-    // printf("count total block\n");
-    // fs->fat = (uint32_t*)malloc(volumeSize*sizeof(uint32_t));
-    // printf("malloc in vcb??\n");
-    // initializeFreeSpace(fs);
-
-    // write vcb to disk
+    
     if(LBAwrite(&vcb, 1, 0) != 1){
 
         printf("Error: faile to write to disk");
