@@ -33,7 +33,7 @@ int createRootDir(int blockSize)
         entries[i].isOccupied = 0;
     }
 
-    printf("did init entries in DE work?\n");
+    // printf("did init entries in DE work?\n");
     // Allocating memory for the blocks that are assigned to file/dir in freespace
     // first element of block_numbers will be the start location of any given file
     // or dir. block_numnbers can be used for LBA write of given file or dir.
@@ -73,10 +73,10 @@ int createRootDir(int blockSize)
     entries[1].size = byteNeeded;
     entries[1].location = block_numbers[0];
 
-    for (int i = 0; i < blockNeeded; i++)
-    {
-        LBAwrite(&entries, 1, block_numbers[i]);
-        printf("the current block is: %ld\n", block_numbers[i]);
-    }
+    // for (int i = 0; i < blockNeeded; i++)
+    // {
+    //     LBAwrite(&entries, 1, block_numbers[i]);
+    //     printf("the current block is: %d\n", i);
+    // }
     return block_numbers[0];
 }

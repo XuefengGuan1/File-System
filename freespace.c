@@ -82,7 +82,7 @@ bool isBlockFree(uint64_t block_number) {
 
 int saveFAT() {
  
-    if (LBAwrite(fs->fat, fs->fatTablesize, 1) != fs->fatTablesize) {  
+    if (LBAwrite(fs->fat, 1, 1) != fs->fatTablesize) {  
         perror("Failed to write FAT to disk");
         return -1;
     }

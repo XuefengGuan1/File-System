@@ -39,7 +39,7 @@ int initialization(uint64_t volumeSize, uint64_t blockSize) {
     // printf("count total block\n");
     // fs->fat = (uint32_t*)malloc(volumeSize*sizeof(uint32_t));
     // printf("malloc in vcb??\n");
-    initializeFreeSpace(fs);
+    // initializeFreeSpace(fs);
 
     // write vcb to disk
     if(LBAwrite(&vcb, 1, 0) != 1){

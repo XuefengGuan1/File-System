@@ -30,8 +30,6 @@ Freespace *fs;
 
 int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 {
-    char testBUffer[10]="fuck";
-    LBAwrite(testBUffer, 1,0);
     printf("Initializing File System with %ld blocks with a block size of %ld\n", numberOfBlocks, blockSize);
     /* TODO: Add any code you need to initialize your file system. */
 
@@ -40,7 +38,7 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     uint64_t volumeSize;
     char *filename = "File_System";
 
-    printf("here runned\n");
+    // printf("here runned\n");
     //start partition
     if(startPartitionSystem(filename, &volumeSize, &blockSize) != 0) {
 
@@ -90,9 +88,11 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
         printf("error");
         return -1;
     }
+     initializeFreeSpace(fs);
+
     createRootDir(blockSize);
     // printf("did we create root directory?\n");
- //   free(vcbPtr);
+    //   free(vcbPtr);
     // printf("free worked?\n");
  
 
