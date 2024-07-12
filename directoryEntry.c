@@ -33,13 +33,10 @@ int createRootDir(int blockSize)
         entries[i].isOccupied = 0;
     }
 
-    // printf("did init entries in DE work?\n");
     // Allocating memory for the blocks that are assigned to file/dir in freespace
     // first element of block_numbers will be the start location of any given file
     // or dir. block_numnbers can be used for LBA write of given file or dir.
 
-    // int *x = (int*)malloc(5*sizeof(int));
-    // printf("debug malloc worked?\n");
 
     uint64_t *block_numbers = (u_int64_t *)malloc(blockNeeded * sizeof(uint64_t));
     // printf("did the malloc work?\n");
@@ -50,7 +47,6 @@ int createRootDir(int blockSize)
         printf("Error: Failed to allocate blocks for root directory\n");
         return EXIT_FAILURE;
     }
-    // printf("did the allocation run?\n");
     // Init the .
     strcpy(entries[0].name, ".");
     entries[0].isDirect = 1;
