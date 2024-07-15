@@ -40,12 +40,12 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     //If existed, doesn't do anything
     if (vcb->volumeSignature == VOLUME_SIG)
     {
-        printf("unilized\n\n\n\n  ");
+        printf("VCB already existed\n");
     }
     else
     //If not exist, initialize the VCB
     {
-        printf("doesn't exist\n\n\n\n");
+        printf("VCB is not initialized, creating a new VCB\n");
         if (initializeVCB(numberOfBlocks * blockSize, blockSize) != 0)
         {
             printf("initalization function error?\n");
