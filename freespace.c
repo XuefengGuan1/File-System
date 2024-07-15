@@ -20,8 +20,11 @@
 #include "fsLow.h"
 #include "freespace.h"
 
+int numberOfBlocksGlobal;
+
 int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize)
 {
+    numberOfBlocksGlobal = numberOfBlocks;
     typedef struct Freespace
     {
         int fat[numberOfBlocks];
@@ -39,6 +42,15 @@ int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize)
     return 0;
 }
 
+int allocateBlocks(int numOfBlocksToAllocate)
+{
+}
+int findFreeBlock()
+{
+    for(int i =0; i< numberOfBlocksGlobal; i++){
+        if(fs)
+    }
+}
 // extern Freespace *fs;
 
 // // FREE macro defined in freespace.h. Value of -1 for reserved blocks
