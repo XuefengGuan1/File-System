@@ -24,26 +24,23 @@
 #include "mfs.h"
 #include "vcb.h"
 #include "freespace.h"
-Freespace *fs;
 
 int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 {
     char readBuffer[blockSize];
-    unsigned int signatureRecorded;
-
     // Read the 1st block and check if existed
     LBAread(readBuffer, 1, 0);
     char localVCB[sizeof(VolumeControlBlock)];
     memcpy(localVCB, readBuffer, sizeof(VolumeControlBlock));
     VolumeControlBlock *vcb = (VolumeControlBlock *)localVCB;
 
-    //If existed, doesn't do anything
+    // If existed, doesn't do anything
     if (vcb->volumeSignature == VOLUME_SIG)
     {
         printf("VCB already existed\n");
     }
     else
-    //If not exist, initialize the VCB
+    // If not exist, initialize the VCB
     {
         printf("VCB is not initialized, creating a new VCB\n");
         if (initializeVCB(numberOfBlocks * blockSize, blockSize) != 0)
@@ -52,13 +49,13 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
             return -1;
         }
     }
-
-    //     initializeFreeSpace(fs);
-
-    //     createRootDir(blockSize);
-
-    //     return 0;
-    // }
+    //init freespace later add this in the check if vcb exist function
+    if (initializeFreeSpace(numberOfBlocks, blockSize) != 0)
+    {
+        printf("initalization function error?\n");
+        return -1;
+    }
+    return 0;
 }
 void exitFileSystem()
 {
