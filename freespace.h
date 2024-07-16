@@ -8,8 +8,8 @@
 
 
 int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize);
-int allocateBlocks(int numOfBlocksToAllocate);
-int findFreeBlock();
+int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize);
+int findFreeBlock(int freespaceSize);
 // void freeBlocks(uint64_t start_block);
 // bool isBlockFree(uint64_t block_number);
 // int saveFAT();

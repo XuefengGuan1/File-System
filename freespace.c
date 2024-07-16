@@ -43,21 +43,23 @@ int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize)
     return freespaceBlocks + 1;
 }
 
-int allocateBlocks(int numOfBlocksToAllocate)
+int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
 {
-    uint16_t head = -1;
-    uint16_t prevNode = -1;
-    uint16_t blockNode;
+    int head = -1;
+    int prevNode = -1;
+    int blockNode;
 
     for (int i = 0; i < numOfBlocksToAllocate; i++)
     {
-        blockNode = findFreeBlock();
+        blockNode = findFreeBlock(freespaceSize);
         if (blockNode == -1)
         {
-            printf("no more available blocks");
+            printf("No more available blocks\n");
             return -1;
         }
-        printf("runned\n");
+
+        printf("Allocated block: %d\n", blockNode);
+
         if (head == -1)
         {
             head = blockNode;
@@ -66,17 +68,28 @@ int allocateBlocks(int numOfBlocksToAllocate)
         {
             fs->fat[prevNode] = blockNode;
         }
+
+        fs->fat[blockNode] = ENDBLOCK;  // Mark as used immediately
         prevNode = blockNode;
     }
-    fs->fat[prevNode] = ENDBLOCK;
+
+    printf("Allocation complete. Head block: %d\n", head);
+    
+    if (LBAwrite(fs->fat, numberOfBlocksGlobal, 1) != numberOfBlocksGlobal)
+    {
+        printf("Error writing FAT to disk\n");
+        return -1;
+    }
+
     return head;
 }
-int findFreeBlock()
+int findFreeBlock(int freespaceSize)
 {
-    for (int i = 0; i < numberOfBlocksGlobal; i++)
+    for (int i = freespaceSize; i < numberOfBlocksGlobal; i++)
     {
         if (fs->fat[i] == FREEBLOCK)
         {
+            printf("runned %d in findfreeblock\n", i);
             return i;
         }
     }
