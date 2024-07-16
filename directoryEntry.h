@@ -19,11 +19,12 @@
 #include "fsLow.h"
 
 #define DIRECTORY_ENTRY_NUMBER 56
+#define MAX_FILENAME_SIZE 30
 
 typedef struct DirectoryEntry
 {
     // 64 bytes in total
-    char name[30];           // File name              30 bytes
+    char name[MAX_FILENAME_SIZE];           // File name              30 bytes
     char isDirect;           // Check if is a directory       1 byte
     char isOccupied;         // Check if the directory is occupied    1 byte
     time_t creationTime;     // Creation time             8 bytes

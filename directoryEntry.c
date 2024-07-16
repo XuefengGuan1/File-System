@@ -6,7 +6,7 @@
  * Group-Name::
  * Project:: Basic File System
  *
- * File:: freespace.c
+ * File:: directoryEntry.c
  *
  * Description:: This file contains the functions for managing free
  *   space using a FAT table.
@@ -20,47 +20,59 @@
 #include <sys/types.h>
 #include <string.h>
 #include <stdlib.h>
-
 int createRootDir(int freespaceSize, int blockSize)
 {
     DirectoryEntry rootDir[DIRECTORY_ENTRY_NUMBER];
-
     int byteNeeded = sizeof(rootDir);
     int blockNeeded = (byteNeeded + blockSize - 1) / blockSize;
     printf("%d blocks needed\n", blockNeeded);
+
+    // Initialize all entries
     for (int i = 0; i < DIRECTORY_ENTRY_NUMBER; i++)
     {
         rootDir[i].isOccupied = 0;
     }
 
-    // Allocating memory for the blocks that are assigned to file/dir in freespace
-    // first element of block_numbers will be the start location of any given file
-    // or dir. block_numnbers can be used for LBA write of given file or dir.
-
-    // Init the .
-    strcpy(rootDir[0].name, ".");
+    // Init the "." entry
+    strncpy(rootDir[0].name, ".", MAX_FILENAME_SIZE);
     rootDir[0].isDirect = 1;
     rootDir[0].isOccupied = 1;
     time(&rootDir[0].creationTime);
-    time(&rootDir[0].modificationTime);
-    time(&rootDir[0].accessTime);
+    rootDir[0].modificationTime = rootDir[0].creationTime;
+    rootDir[0].accessTime = rootDir[0].creationTime;
     rootDir[0].size = byteNeeded;
 
-    // This only works for the root directory, child directory needs to point to its parent
-    //  Init the ..
-    strcpy(rootDir[1].name, "..");
+    // Init the ".." entry
+    strncpy(rootDir[1].name, "..", MAX_FILENAME_SIZE);
     rootDir[1].isDirect = 1;
     rootDir[1].isOccupied = 1;
-    time(&rootDir[1].creationTime);
-    time(&rootDir[1].modificationTime);
-    time(&rootDir[1].accessTime);
+    rootDir[1].creationTime = rootDir[0].creationTime;
+    rootDir[1].modificationTime = rootDir[0].creationTime;
+    rootDir[1].accessTime = rootDir[0].creationTime;
     rootDir[1].size = byteNeeded;
 
+    int startingBlockFromFreeSpace = allocateBlocks(blockNeeded, freespaceSize);
+    if (startingBlockFromFreeSpace == -1) {
+        printf("Failed to allocate blocks for root directory\n");
+        return -1;
+    }
+    printf("Root directory starts at block: %d\n", startingBlockFromFreeSpace);
+
+    int head = startingBlockFromFreeSpace;
+    int entriesPerBlock = blockSize / sizeof(DirectoryEntry);
+    
     for (int i = 0; i < blockNeeded; i++)
     {
-        LBAwrite(&rootDir, 1, freespaceSize);
-    }
-    printf("the current block is: %d\n", freespaceSize);
+        int entriesToWrite = (i == blockNeeded - 1) ? 
+            (DIRECTORY_ENTRY_NUMBER % entriesPerBlock) : entriesPerBlock;
+        if (entriesToWrite == 0) entriesToWrite = entriesPerBlock;
 
-    return freespaceSize;
+        if (LBAwrite(rootDir + i * entriesPerBlock, 1, head) != 1) {
+            printf("Error writing root directory block %d\n", i);
+            return -1;
+        }
+        head++;
+    }
+
+    return startingBlockFromFreeSpace;
 }
