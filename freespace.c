@@ -21,35 +21,67 @@
 #include "freespace.h"
 
 int numberOfBlocksGlobal;
+typedef struct Freespace
+{
+    int *fat;
+} Freespace;
+Freespace *fs;
 
 int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize)
 {
     numberOfBlocksGlobal = numberOfBlocks;
-    typedef struct Freespace
-    {
-        int fat[numberOfBlocks];
-    } Freespace;
+    fs = (Freespace *)malloc(sizeof(Freespace));
+    fs->fat = (int*) malloc(sizeof(int) * numberOfBlocks);
 
-    Freespace *fs = (Freespace *)malloc(sizeof(Freespace));
-    printf("numOf blocks is %ld\n", numberOfBlocks);
-    printf("num of blocks of FAT is: %ld\n", sizeof(Freespace));
     int freespaceBlocks = (sizeof(Freespace) + blockSize - 1) / blockSize;
-    for (int i = 0; i < numberOfBlocks - 1; i++)
+    for (int i = 0; i < numberOfBlocks; i++)
     {
         fs->fat[i] = FREEBLOCK;
     }
-    LBAwrite(fs, freespaceBlocks, 1);
+    printf("write?\n");
+    LBAwrite(fs->fat, freespaceBlocks, 1);
     return 0;
 }
 
 int allocateBlocks(int numOfBlocksToAllocate)
 {
+    uint16_t head = -1;
+    uint16_t prevNode = -1;
+    uint16_t blockNode;
+
+    for (int i = 0; i < numOfBlocksToAllocate; i++)
+    {
+        blockNode = findFreeBlock();
+        if (blockNode == -1)
+        {
+            printf("no more available blocks");
+            return -1;
+        }
+        printf("runned\n");
+        if (head == -1)
+        {
+            head = blockNode;
+        }
+        else
+        {
+            fs->fat[prevNode] = blockNode;
+        }
+        prevNode = blockNode;
+    }
+    fs->fat[prevNode] = ENDBLOCK;
+    return head;
 }
 int findFreeBlock()
 {
-    for(int i =0; i< numberOfBlocksGlobal; i++){
-        if(fs)
+    for (int i = 0; i < numberOfBlocksGlobal; i++)
+    {
+        if (fs->fat[i] == FREEBLOCK)
+        {
+            return i;
+        }
     }
+    // If no free space available
+    return -1;
 }
 // extern Freespace *fs;
 
