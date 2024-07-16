@@ -69,18 +69,17 @@ int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
             fs->fat[prevNode] = blockNode;
         }
 
-        fs->fat[blockNode] = ENDBLOCK;  // Mark as used immediately
+        fs->fat[blockNode] = ENDBLOCK; // Mark as used immediately
         prevNode = blockNode;
     }
 
     printf("Allocation complete. Head block: %d\n", head);
-    
-    if (LBAwrite(fs->fat, numberOfBlocksGlobal, 1) != numberOfBlocksGlobal)
+
+    if (LBAwrite(fs->fat, numberOfBlocksGlobal, 1) == -1)
     {
         printf("Error writing FAT to disk\n");
         return -1;
     }
-
     return head;
 }
 int findFreeBlock(int freespaceSize)
