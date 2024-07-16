@@ -3,37 +3,25 @@
 #include <unistd.h>
 #include <limits.h>
 
-// PATH_MAX was not defined in my limits.h file
-// fallback value 
-#ifndef PATH_MAX
-#define PATH_MAX 4096
-#endif
+#include "mfs.h"
 
-#include "fsCWD.h"
-
-char* fs_getCWD(void) {
+char* fs_getcwd(char* path, size_t size) {
 
 
-    // allocate memory for path name
-    // set size using limits.h PATH_MAX 4096 bytes
-    char* buffer = malloc(PATH_MAX);
+    if(path == NULL || size == 0) {
 
-    if(buffer == NULL) {
-
-        free(buffer);
         return NULL;
     }
 
-    if(getcwd(buffer, PATH_MAX) == NULL) {
+    if(getcwd(path, size) == NULL) {
 
-        free(buffer);
         return NULL;
     }
 
-    return buffer;
+    return path;
 }
 
-int fs_setCWD(const char* path) {
+int fs_setcwd(char* path) {
 
     if(path == NULL) {
 
