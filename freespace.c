@@ -20,7 +20,7 @@
 #include "fsLow.h"
 #include "freespace.h"
 
-u_int64_t numberOfBlocksGlobal;
+uint64_t numberOfBlocksGlobal;
 typedef struct Freespace
 {
     int *fat;
@@ -39,8 +39,8 @@ int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize)
     {
         fs->fat[i] = FREEBLOCK;
     }
-    LBAwrite(fs->fat, freespaceBlocks, 1);
-    return 0;
+    LBAwrite(fs->fat, numberOfBlocks, 1);
+    return freespaceBlocks + 1;
 }
 
 int allocateBlocks(int numOfBlocksToAllocate)

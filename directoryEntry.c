@@ -13,57 +13,54 @@
  *
  **************************************************************/
 
-// #include "directoryEntry.h"
-// #include <stdio.h>
-// #include "freespace.h"
-// #include "fsLow.h"
-// #include <sys/types.h>
-// #include <string.h>
-// #include <stdlib.h>
+#include "directoryEntry.h"
+#include <stdio.h>
+#include "freespace.h"
+#include "fsLow.h"
+#include <sys/types.h>
+#include <string.h>
+#include <stdlib.h>
 
-// DirectoryEntry rootDir;
+int createRootDir(int freespaceSize, int blockSize)
+{
+    DirectoryEntry rootDir[DIRECTORY_ENTRY_NUMBER];
 
-// int createRootDir(int blockSize)  
-// {
-//     int byteNeeded = sizeof(rootDir) * DIRECTORY_ENTRY_NUMBER;
-//     int blockNeeded = (byteNeeded + blockSize - 1) / blockSize;
-//     DirectoryEntry entries[DIRECTORY_ENTRY_NUMBER];
-//     for (int i = 0; i < DIRECTORY_ENTRY_NUMBER; i++)
-//     {
-//         entries[i].isOccupied = 0;
-//     }
+    int byteNeeded = sizeof(rootDir);
+    int blockNeeded = (byteNeeded + blockSize - 1) / blockSize;
+    printf("%d blocks needed\n", blockNeeded);
+    for (int i = 0; i < DIRECTORY_ENTRY_NUMBER; i++)
+    {
+        rootDir[i].isOccupied = 0;
+    }
 
-//     // Allocating memory for the blocks that are assigned to file/dir in freespace
-//     // first element of block_numbers will be the start location of any given file
-//     // or dir. block_numnbers can be used for LBA write of given file or dir.
+    // Allocating memory for the blocks that are assigned to file/dir in freespace
+    // first element of block_numbers will be the start location of any given file
+    // or dir. block_numnbers can be used for LBA write of given file or dir.
 
+    // Init the .
+    strcpy(rootDir[0].name, ".");
+    rootDir[0].isDirect = 1;
+    rootDir[0].isOccupied = 1;
+    time(&rootDir[0].creationTime);
+    time(&rootDir[0].modificationTime);
+    time(&rootDir[0].accessTime);
+    rootDir[0].size = byteNeeded;
 
-//     // Init the .
-//     strcpy(entries[0].name, ".");
-//     entries[0].isDirect = 1;
-//     entries[0].isOccupied = 1;
-//     time(&entries[0].creationTime);
-//     time(&entries[0].modificationTime);
-//     time(&entries[0].accessTime);
-//     entries[0].size = byteNeeded;
-//     entries[0].location = block_numbers[0];
+    // This only works for the root directory, child directory needs to point to its parent
+    //  Init the ..
+    strcpy(rootDir[1].name, "..");
+    rootDir[1].isDirect = 1;
+    rootDir[1].isOccupied = 1;
+    time(&rootDir[1].creationTime);
+    time(&rootDir[1].modificationTime);
+    time(&rootDir[1].accessTime);
+    rootDir[1].size = byteNeeded;
 
-//     // This only works for the root directory, child directory needs to point to its parent
-//     //  Init the ..
-//     strncpy(entries[1].name, "..", 29);
-//     entries[1].name[29] = '\n';
-//     entries[1].isDirect = 1;
-//     entries[1].isOccupied = 1;
-//     time(&entries[1].creationTime);
-//     time(&entries[1].modificationTime);
-//     time(&entries[1].accessTime);
-//     entries[1].size = byteNeeded;
-//     entries[1].location = block_numbers[0];
+    for (int i = 0; i < blockNeeded; i++)
+    {
+        LBAwrite(&rootDir, 1, freespaceSize);
+    }
+    printf("the current block is: %d\n", freespaceSize);
 
-//     for (int i = 3; i < 10; i++)
-//     {
-//         LBAwrite(&entries, 1, i);
-//         printf("the current block is: %d\n", i);
-//     }
-//     return block_numbers[0];
-// }
+    return freespaceSize;
+}

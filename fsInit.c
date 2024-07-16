@@ -49,12 +49,16 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
             return -1;
         }
     }
-    //init freespace later add this in the check if vcb exist function
-    if (initializeFreeSpace(numberOfBlocks, blockSize) != 0)
+    // init freespace later add this in the check if vcb exist function
+    int freespaceSize = initializeFreeSpace(numberOfBlocks, blockSize);
+    if (freespaceSize == -1)
     {
         printf("initalization function error?\n");
         return -1;
     }
+    
+    // init root directory 
+    int rootDirStartingBlock = createRootDir(freespaceSize, blockSize);
     return 0;
 }
 void exitFileSystem()
