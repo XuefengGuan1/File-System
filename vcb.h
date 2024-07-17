@@ -1,40 +1,37 @@
 /**************************************************************
-* Class::  CSC-415-02 Spring 2024
-* Name::Inderpaul Bhander
-* Student IDs::
-* GitHub-Name::
-* Group-Name::
-* Project:: Basic File System
-*
-* File:: vcb.h
-*
-* Description:: Header file for volume control block
-*
-**************************************************************/
+ * Class::  CSC-415-02 Spring 2024
+ * Name::Inderpaul Bhander
+ * Student IDs::
+ * GitHub-Name::
+ * Group-Name::
+ * Project:: Basic File System
+ *
+ * File:: vcb.h
+ *
+ * Description:: Header file for volume control block
+ *
+ **************************************************************/
 
 // VCB header file
 #ifndef VCB_H
 #define VCB_H
 
-#include <sys/types.h>
+#include "directoryEntry.h"
+#include "vcb.h"
 
-#ifndef uint64_t
-typedef u_int64_t uint64_t;
-#endif
+#define VOLUME_SIG 1234
 
-struct VolumeControlBlock {
-
-    unsigned int blockSize;
+typedef struct VolumeControlBlock
+{
     unsigned int volumeSignature;
+    unsigned int blockSize;
     unsigned int rootDirectoryLocation;
     unsigned int volumeSize;
     unsigned int fatTableLocation;
 
-};
-
-extern struct VolumeControlBlock vcb;
+} VolumeControlBlock;
 
 // vcb initialziation function
-int initialization(uint64_t volumeSize, uint64_t blockSize);
+int initializeVCB(uint64_t volumeSize, uint64_t blockSize);
 
 #endif
