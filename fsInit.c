@@ -24,50 +24,43 @@
 #include "mfs.h"
 #include "vcb.h"
 #include "freespace.h"
-#include "directoryEntry.h"
-#define VOLUME_SIG 0xFFFF
-Freespace *fs;
 
 int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 {
-    //printf("Initializing File System with %ld blocks with a block size of %ld\n", numberOfBlocks, blockSize);
-    /* TODO: Add any code you need to initialize your file system. */
+    char readBuffer[blockSize];
+    // Read the 1st block and check if existed
+    LBAread(readBuffer, 1, 0);
+    char localVCB[sizeof(VolumeControlBlock)];
+    memcpy(localVCB, readBuffer, sizeof(VolumeControlBlock));
+    VolumeControlBlock *vcb = (VolumeControlBlock *)localVCB;
 
-
-
-    uint64_t volumeSize;
-    char *filename = "File_System";
-
-
-    if(startPartitionSystem(filename, &numberOfBlocks, &blockSize) != 0) {
-
-        printf("Error");
-        return -1;
+    // If existed, doesn't do anything
+    if (vcb->volumeSignature == VOLUME_SIG)
+    {
+        printf("VCB already existed\n");
     }
-
-   
-    fs = (Freespace*)malloc(sizeof(Freespace));
-    if (!fs) {
-        perror("Failed to allocate memory for FileSystem structure");
-        closePartitionSystem();
-        return -1;
-    } 
-  
-    fs->totalBlocks= numberOfBlocks;
-    if(initialization(volumeSize, blockSize)  != 0) {
+    else
+    // If not exist, initialize the VCB
+    {
+        printf("VCB is not initialized, creating a new VCB\n");
+        if (initializeVCB(numberOfBlocks * blockSize, blockSize) != 0)
+        {
+            printf("initalization function error?\n");
+            return -1;
+        }
+    }
+    // init freespace later add this in the check if vcb exist function
+    int freespaceSize = initializeFreeSpace(numberOfBlocks, blockSize);
+    if (freespaceSize == -1)
+    {
         printf("initalization function error?\n");
-        printf("error");
         return -1;
     }
-     initializeFreeSpace(fs);
-
-    createRootDir(blockSize);
-
- 
-
+    
+    // init root directory 
+    int rootDirStartingBlock = createDir(freespaceSize, blockSize,NULL);
     return 0;
 }
-
 void exitFileSystem()
 {
     printf("System exiting\n");
