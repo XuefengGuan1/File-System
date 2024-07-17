@@ -20,12 +20,18 @@
 #include <sys/types.h>
 #include <string.h>
 #include <stdlib.h>
-int createRootDir(int freespaceSize, int blockSize)
+
+int blockSizeGlobal;
+int blocksNeededGlobal;
+
+int createRootDir(int startingBlock, int blockSize)
 {
+    blockSizeGlobal = blockSize;
     DirectoryEntry rootDir[DIRECTORY_ENTRY_NUMBER];
     int byteNeeded = sizeof(rootDir);
-    int blockNeeded = (byteNeeded + blockSize - 1) / blockSize;
-    printf("%d blocks needed\n", blockNeeded);
+    int blocksNeeded = (byteNeeded + blockSize - 1) / blockSize;
+    blocksNeededGlobal = blocksNeeded;
+    printf("%d blocks needed\n", blocksNeeded);
 
     // Initialize all entries
     for (int i = 0; i < DIRECTORY_ENTRY_NUMBER; i++)
@@ -41,6 +47,7 @@ int createRootDir(int freespaceSize, int blockSize)
     rootDir[0].modificationTime = rootDir[0].creationTime;
     rootDir[0].accessTime = rootDir[0].creationTime;
     rootDir[0].size = byteNeeded;
+    rootDir[0].location = startingBlock;
 
     // Init the ".." entry
     strncpy(rootDir[1].name, "..", MAX_FILENAME_SIZE);
@@ -50,9 +57,11 @@ int createRootDir(int freespaceSize, int blockSize)
     rootDir[1].modificationTime = rootDir[0].creationTime;
     rootDir[1].accessTime = rootDir[0].creationTime;
     rootDir[1].size = byteNeeded;
+    rootDir[0].location = startingBlock;
 
-    int startingBlockFromFreeSpace = allocateBlocks(blockNeeded, freespaceSize);
-    if (startingBlockFromFreeSpace == -1) {
+    int startingBlockFromFreeSpace = allocateBlocks(blocksNeeded, startingBlock);
+    if (startingBlockFromFreeSpace == -1)
+    {
         printf("Failed to allocate blocks for root directory\n");
         return -1;
     }
@@ -60,14 +69,15 @@ int createRootDir(int freespaceSize, int blockSize)
 
     int head = startingBlockFromFreeSpace;
     int entriesPerBlock = blockSize / sizeof(DirectoryEntry);
-    
-    for (int i = 0; i < blockNeeded; i++)
-    {
-        int entriesToWrite = (i == blockNeeded - 1) ? 
-            (DIRECTORY_ENTRY_NUMBER % entriesPerBlock) : entriesPerBlock;
-        if (entriesToWrite == 0) entriesToWrite = entriesPerBlock;
 
-        if (LBAwrite(rootDir + i * entriesPerBlock, 1, head) != 1) {
+    for (int i = 0; i < blocksNeeded; i++)
+    {
+        int entriesToWrite = (i == blocksNeeded - 1) ? (DIRECTORY_ENTRY_NUMBER % entriesPerBlock) : entriesPerBlock;
+        if (entriesToWrite == 0)
+            entriesToWrite = entriesPerBlock;
+
+        if (LBAwrite(rootDir + i * entriesPerBlock, 1, head) != 1)
+        {
             printf("Error writing root directory block %d\n", i);
             return -1;
         }
@@ -75,4 +85,32 @@ int createRootDir(int freespaceSize, int blockSize)
     }
 
     return startingBlockFromFreeSpace;
+}
+
+uint16_t createDirectory(DirectoryEntry *parent)
+{
+    DirectoryEntry newDir[DIRECTORY_ENTRY_NUMBER];
+
+    for (int i = 0; i < DIRECTORY_ENTRY_NUMBER; i++)
+    {
+        newDir[i].isOccupied = 0;
+    }
+
+    strncpy(newDir[0].name, ".", MAX_FILENAME_SIZE);
+    newDir[0].isDirect = 1;
+    newDir[0].isOccupied = 1;
+    time(&newDir[0].creationTime);
+    newDir[0].modificationTime = newDir[0].creationTime;
+    newDir[0].accessTime = newDir[0].creationTime;
+    newDir[0].size = sizeof(newDir);
+
+    strncpy(newDir[1].name, "..", MAX_FILENAME_SIZE);
+    newDir[1].isDirect = 1;
+    newDir[1].isOccupied = 1;
+    time(&newDir[1].creationTime);
+    newDir[1].modificationTime = newDir[1].creationTime;
+    newDir[1].accessTime = newDir[1].creationTime;
+    newDir[1].size = parent[0].size;
+
+    
 }

@@ -17,6 +17,8 @@
 #define DIRECTORYENTRY_H
 #include <time.h>
 #include "fsLow.h"
+#include <stdint.h>
+
 
 #define DIRECTORY_ENTRY_NUMBER 56
 #define MAX_FILENAME_SIZE 30
@@ -34,6 +36,7 @@ typedef struct DirectoryEntry
     unsigned int location;   // Starting block of the file on the disk   4 bytes
 } DirectoryEntry;
 
-int createRootDir(int freespaceSize, int blockSize);
+int createRootDir(int startingBlock, int blockSize);
+uint16_t createDirectory(DirectoryEntry *parent);
 
 #endif
