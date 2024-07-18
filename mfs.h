@@ -21,6 +21,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <time.h>
+#include <string.h>
+#include <errno.h>
+#include <stdlib.h>
 
 #include "b_io.h"
 
