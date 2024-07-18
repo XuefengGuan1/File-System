@@ -1,6 +1,4 @@
 #include "mfs.h"
-#include "directoryEntry.h"
-#include "b_io.h"
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -70,6 +68,26 @@ fs_mkdir(const char *pathname, mode_t mode) {
     free(newDir);
 
     return 0;
+}
+
+int fs_isFile(char *filename) {
+
+    return 0;
+}
+
+int fs_isDir(char *pathname) {
+
+    return 0;
+}
+
+int fs_setcwd(char *pathname) {
+
+    return 0;
+}
+
+char *fs_getcwd(char *pathname, size_t size) {
+
+    return NULL;
 }
 
 
