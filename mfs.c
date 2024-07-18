@@ -89,10 +89,10 @@ int fs_setcwd(char *pathname) {
         return -1;
     }
 
-    if(chdir(pathname) != 0) {
-
-        return -1;
-    }
+//    if(chdir(pathname) != 0) {
+//
+//        return -1;
+//    }
 
     return 0;
 
@@ -104,11 +104,11 @@ char *fs_getcwd(char *pathname, size_t size) {
  
         return NULL;
      }
-    if(getcwd(pathname, size) == NULL) {
- 
-        return NULL;
-     }
-
+//    if(getcwd(pathname, size) == NULL) {
+// 
+//        return NULL;
+//     }
+//
     return pathname;
 }
 
