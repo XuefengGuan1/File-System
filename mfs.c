@@ -133,7 +133,6 @@ fdDir *fs_opendir(const char *pathname) {
     dirp->dirEntryPosition = 0;
     dirp->di = NULL;
 
-    // Store the DIR pointer in a custom field (assuming you add it in the fdDir structure)
     dirp->dirStream = dir;
 
     return dirp;
