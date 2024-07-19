@@ -11,7 +11,7 @@
 // store the cwd
 static char cwd[MAX_PATH_LENGTH] = "/";
 
-fs_mkdir(const char *pathname, mode_t mode) {
+int fs_mkdir(const char *pathname, mode_t mode) {
 
     if(!pathname || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH) {
 
@@ -79,20 +79,19 @@ int fs_isFile(char *filename) {
         return 0; //invalid file name
     }
 
+    // if not a dir, then is file
+    if(fs_isDir(filename)) {
+
+        return 0;
+    }
+
     struct fs_stat buff;
     if(fs_stat(filename, &buff) == -1) {
 
         return 0; // file does not exist or error in stat
     }
 
-    // need filetype in fs_stat
-    // fileType = entry.isDir ? FT_DIRECTORY : FT_REGFILE
-//    if((buff.fileType = FT_REGFILE)) {
-//
-//        return 1; // regular file
-//    }
-
-    return 0;// not a regular file
+    return 1;
 }
 
 int fs_isDir(char *pathname) {
