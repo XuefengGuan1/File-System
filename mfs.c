@@ -8,6 +8,7 @@
 
 #define MAX_PATH_LENGTH 4096
 
+// store the cwd
 static char cwd[MAX_PATH_LENGTH] = "/";
 
 fs_mkdir(const char *pathname, mode_t mode) {
@@ -25,7 +26,7 @@ fs_mkdir(const char *pathname, mode_t mode) {
         return -1;
     }
 
-    DirectoryEntry* parent = fs_opendir(parentPath);
+    DirectoryEntry * parent = fs_opendir(parentPath);
     if(!parent) {
 
         free(parentPath);
@@ -45,7 +46,6 @@ fs_mkdir(const char *pathname, mode_t mode) {
     if(!newDir) {
 
         free(parentPath);
-        free(lastEleName);
         errno = ENOMEM;
         return -1;
     }
@@ -54,7 +54,6 @@ fs_mkdir(const char *pathname, mode_t mode) {
     if(parentIDX == -1) {
 
         free(parentPath);
-        free(lastEleName);
         free(newDir);
         errno = ENOSPC;
         return -1;
@@ -68,7 +67,6 @@ fs_mkdir(const char *pathname, mode_t mode) {
     // *here*
 
     free(parentPath);
-    free(lastEleName);
     free(newDir);
 
     return 0;
