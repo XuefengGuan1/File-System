@@ -74,12 +74,42 @@ fs_mkdir(const char *pathname, mode_t mode) {
 
 int fs_isFile(char *filename) {
 
-    return 0;
+    if(filename == NULL || strlen(filename) == 0 || strlen(filename) > MAX_PATH_LENGTH) {
+
+        return 0; //invalid file name
+    }
+
+    struct fs_stat buff;
+    if(fs_stat(filename, &buff) == -1) {
+
+        return 0; // file does not exist or error in stat
+    }
+
+    // need filetype in fs_stat
+    // fileType = entry.isDir ? FT_DIRECTORY : FT_REGFILE
+//    if((buff.fileType = FT_REGFILE)) {
+//
+//        return 1; // regular file
+//    }
+
+    return 0;// not a regular file
 }
 
 int fs_isDir(char *pathname) {
 
-    return 0;
+    if(pathname == NULL || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH) {
+
+        return 0; // invalid path
+    }
+
+    fdDir *dir = fs_opendir(pathname);
+    if(dir == NULL) {
+
+        return 0; //not a directory
+    }
+
+    fs_closedir(dir);
+    return 1;
 }
 
 int fs_setcwd(char *pathname) {
