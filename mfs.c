@@ -112,4 +112,29 @@ char *fs_getcwd(char *pathname, size_t size) {
     return pathname;
 }
 
+fdDir *fs_opendir(const char *pathname) {
+    // Open the directory using opendir
+    DIR *dir = opendir(pathname);
+    if (!dir) {
+        perror("opendir failed");
+        return NULL;
+    }
 
+    // Allocate memory for fdDir structure
+    fdDir *dirp = (fdDir *)malloc(sizeof(fdDir));
+    if (!dirp) {
+        perror("malloc failed");
+        closedir(dir);
+        return NULL;
+    }
+
+    // Initialize fdDir structure
+    dirp->d_reclen = 0;
+    dirp->dirEntryPosition = 0;
+    dirp->di = NULL;
+
+    // Store the DIR pointer in a custom field (assuming you add it in the fdDir structure)
+    dirp->dirStream = dir;
+
+    return dirp;
+}
