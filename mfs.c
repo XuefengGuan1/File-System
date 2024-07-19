@@ -8,6 +8,8 @@
 
 #define MAX_PATH_LENGTH 4096
 
+static char cwd[MAX_PATH_LENGTH] = "/";
+
 fs_mkdir(const char *pathname, mode_t mode) {
 
     if(!pathname || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH) {
@@ -119,10 +121,14 @@ int fs_setcwd(char *pathname) {
         return -1;
     }
 
-//    if(chdir(pathname) != 0) {
-//
-//        return -1;
-//    }
+    if(!fs_isDir(pathname)) {
+
+        errno = ENOTDIR;
+        return -1;
+    }
+
+    strncpy(cwd, pathname, MAX_PATH_LENGTH);
+    cwd[MAX_PATH_LENGTH - 1] = '\0';
 
     return 0;
 
@@ -135,62 +141,15 @@ char *fs_getcwd(char *pathname, size_t size) {
         return NULL;
      }
 
-   // initialize a buffer that holds cwd path
-   // append dir names as we traverse dir
-   char buffer[MAX_PATH_LENGTH];
-   char temp[size + 1];
-   int pos = MAX_PATH_LENGTH - 1;
+    if(strlen(cwd) >= size) {
 
-   buffer[pos] = '\0';
-   pos--;
+        errno = ERANGE;
+        return NULL;
+    }
 
-   DirectoryEntry *currentDir = fs_opendir(pathname);
-   if(!currentDir) {
+    strncpy(pathname, cwd, size);
+    pathname[size-1] = '\0';
 
-       return NULL;
-   }
-
-   // travers current dir up to root dir and build path string in reverse order
-   // initialize temp buffer with current dirs name, get its length
-   // check for any buffer overflow
-   // move the position pointer backwards, copy the current dirs name into new buffer position
-   // remove '/'
-   while(currentDir.location != /*ROOT_LOCATION*/0) {
-
-       strncpy(temp, currentDir.name, size);
-       temp[size] ='\0';
-
-       int nameLen = strlen(temp);
-       // buffer overflow
-       if(pos - nameLen - 1 < 0) {
-
-           return NULL;
-       }
-
-       pos -= nameLen;
-       strncpy(&buffer[pos], temp, nameLen);
-       pos--;
-
-       // prepend /
-       buffer[pos] = '/';
-
-   }
-
-   // buffer too small
-   if(MAX_PATH_LENGTH -pos -1 > size) {
-
-       return NULL;
-   }
-
-   strncpy(pathname, &buffer[pos], size);
-
-   return pathname;
-
-//    if(getcwd(pathname, size) == NULL) {
-// 
-//        return NULL;
-//     }
-//
     return pathname;
 }
 
