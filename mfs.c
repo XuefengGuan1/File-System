@@ -23,7 +23,7 @@ fs_mkdir(const char *pathname, mode_t mode) {
         return -1;
     }
 
-    DirectoryEntry* parent = fs_opendir(parent);
+    DirectoryEntry* parent = fs_opendir(parentPath);
     if(!parent) {
 
         free(parentPath);
@@ -104,6 +104,58 @@ char *fs_getcwd(char *pathname, size_t size) {
  
         return NULL;
      }
+
+   // initialize a buffer that holds cwd path
+   // append dir names as we traverse dir
+   char buffer[MAX_PATH_LENGTH];
+   char temp[size + 1];
+   int pos = MAX_PATH_LENGTH - 1;
+
+   buffer[pos] = '\0';
+   pos--;
+
+   DirectoryEntry *currentDir = fs_opendir(pathname);
+   if(!currentDir) {
+
+       return NULL;
+   }
+
+   // travers current dir up to root dir and build path string in reverse order
+   // initialize temp buffer with current dirs name, get its length
+   // check for any buffer overflow
+   // move the position pointer backwards, copy the current dirs name into new buffer position
+   // remove '/'
+   while(currentDir.location != /*ROOT_LOCATION*/0) {
+
+       strncpy(temp, currentDir.name, size);
+       temp[size] ='\0';
+
+       int nameLen = strlen(temp);
+       // buffer overflow
+       if(pos - nameLen - 1 < 0) {
+
+           return NULL;
+       }
+
+       pos -= nameLen;
+       strncpy(&buffer[pos], temp, nameLen);
+       pos--;
+
+       // prepend /
+       buffer[pos] = '/';
+
+   }
+
+   // buffer too small
+   if(MAX_PATH_LENGTH -pos -1 > size) {
+
+       return NULL;
+   }
+
+   strncpy(pathname, &buffer[pos], size);
+
+   return pathname;
+
 //    if(getcwd(pathname, size) == NULL) {
 // 
 //        return NULL;
