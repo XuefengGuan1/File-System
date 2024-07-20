@@ -165,12 +165,9 @@ char *fs_getcwd(char *pathname, size_t size) {
 }
 
 fdDir *fs_opendir(const char *pathname) {
-    // Open the directory using opendir
-    DIR *dir = opendir(pathname);
-    if (!dir) {
-        perror("opendir failed");
-        return NULL;
-    }
+
+DirectoryEntry currentDirEntries[DIRECTORY_ENTRY_NUMBER];
+
 
     // Allocate memory for fdDir structure
     fdDir *dirp = (fdDir *)malloc(sizeof(fdDir));
@@ -179,13 +176,28 @@ fdDir *fs_opendir(const char *pathname) {
         closedir(dir);
         return NULL;
     }
+    
 
-    // Initialize fdDir structure
-    dirp->d_reclen = 0;
-    dirp->dirEntryPosition = 0;
-    dirp->di = NULL;
+    fd->d_reclen = sizeof(struct fs_diriteminfo);
+    fd->dirEntryPosition = 0;
 
-    dirp->dirStream = dir;
 
-    return dirp;
+    fd->di = (struct fs_diriteminfo *)malloc(fd->d_reclen * DIRECTORY_ENTRY_NUMBER);
+    if (fd->di == NULL) {
+        free(fd);
+        errno = ENOMEM; 
+        return NULL;
+    }
+
+    //fill fdDir structure with directory entries
+    for (int i = 0; i < DIRECTORY_ENTRY_NUMBER; i++) {
+        if (currentDirEntries[i].isOccupied) {
+            fd->di[i].d_reclen = sizeof(struct fs_diriteminfo);
+            fd->di[i].fileType = currentDirEntries[i].isDirect ? FT_DIRECTORY : FT_REGFILE;
+            strncpy(fd->di[i].d_name, currentDirEntries[i].name, sizeof(fd->di[i].d_name) - 1);
+            fd->di[i].d_name[sizeof(fd->di[i].d_name) - 1] = '\0';
+        }
+    }
+
+    return fd;
 }
