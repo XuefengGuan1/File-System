@@ -152,38 +152,51 @@ char *fs_getcwd(char *pathname, size_t size) {
 
 fdDir *fs_opendir(const char *pathname) {
 
-DirectoryEntry currentDirEntries[DIRECTORY_ENTRY_NUMBER];
+    int count;
+
+    char** pathcopy = parsePath(pathname, &count);
 
 
-    // Allocate memory for fdDir structure
-    fdDir *dirp = (fdDir *)malloc(sizeof(fdDir));
-    if (!dirp) {
-        perror("malloc failed");
-        closedir(dir);
-        return NULL;
+    Directory* dir = loadDir(pathcopy, count);
+
+    if (dir == NULL) {
+        return NULL; // Failed to load directory
     }
-    
 
-    fd->d_reclen = sizeof(struct fs_diriteminfo);
+    fdDir* fd = (fdDir*)malloc(sizeof(fdDir));
+    if (fd == NULL) {
+        return NULL; // Memory allocation failed
+    }
+
+    fd->d_reclen = dir->entryCount;
     fd->dirEntryPosition = 0;
-
-
-    fd->di = (struct fs_diriteminfo *)malloc(fd->d_reclen * DIRECTORY_ENTRY_NUMBER);
-    if (fd->di == NULL) {
-        free(fd);
-        errno = ENOMEM; 
-        return NULL;
-    }
-
-    //fill fdDir structure with directory entries
-    for (int i = 0; i < DIRECTORY_ENTRY_NUMBER; i++) {
-        if (currentDirEntries[i].isOccupied) {
-            fd->di[i].d_reclen = sizeof(struct fs_diriteminfo);
-            fd->di[i].fileType = currentDirEntries[i].isDirect ? FT_DIRECTORY : FT_REGFILE;
-            strncpy(fd->di[i].d_name, currentDirEntries[i].name, sizeof(fd->di[i].d_name) - 1);
-            fd->di[i].d_name[sizeof(fd->di[i].d_name) - 1] = '\0';
-        }
-    }
+    fd->directory = dir;
 
     return fd;
+}
+
+struct fs_diriteminfo* fs_readdir(fdDir* fd) {
+    if (fd == NULL || fd->directory == NULL || fd->dirEntryPosition >= fd->d_reclen) {
+        return NULL; 
+    }
+
+    DirectoryEntry* entry = &fd->directory->entries[fd->dirEntryPosition];
+    static struct fs_diriteminfo diriteminfo;
+
+    diriteminfo.d_reclen = sizeof(struct fs_diriteminfo);
+    diriteminfo.fileType = entry->isDirect ? FT_DIRECTORY : FT_REGFILE;
+    strncpy(diriteminfo.d_name, entry->name, 256);
+
+    fd->dirEntryPosition++;
+
+    return &diriteminfo;
+}
+
+int fs_closedir(fdDir* fd) {
+    if (fd == NULL) {
+        return -1;
+    }
+
+    free(fd);
+    return 0;
 }
