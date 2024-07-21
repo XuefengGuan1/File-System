@@ -157,7 +157,7 @@ fdDir *fs_opendir(const char *pathname) {
     char** pathcopy = parsePath(pathname, &count);
 
 
-    Directory* dir = loadDir(pathcopy, count);
+    DirectoryEntry* dir = loadDir(pathcopy, count);
 
     if (dir == NULL) {
         return NULL; // Failed to load directory
