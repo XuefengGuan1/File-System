@@ -23,7 +23,7 @@
 uint64_t numberOfBlocksGlobal;
 typedef struct Freespace
 {
-    int *fat;
+    int8_t *fat;
 } Freespace;
 Freespace *fs;
 
@@ -32,9 +32,9 @@ int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize)
     numberOfBlocksGlobal = numberOfBlocks;
 
     fs = (Freespace *)malloc(sizeof(Freespace));
-    fs->fat = (int *)malloc(sizeof(int) * numberOfBlocks);
+    fs->fat = (int8_t *)malloc(sizeof(int8_t) * numberOfBlocks);
 
-    int freespaceBlocks = (sizeof(int) * numberOfBlocks + blockSize - 1) / blockSize;
+    int freespaceBlocks = (sizeof(int8_t) * numberOfBlocks + blockSize - 1) / blockSize;
     for (int i = 0; i < numberOfBlocks; i++)
     {
         fs->fat[i] = FREEBLOCK;
@@ -82,6 +82,7 @@ int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
     }
     return head;
 }
+
 int findFreeBlock(int freespaceSize)
 {
     for (int i = freespaceSize; i < numberOfBlocksGlobal; i++)

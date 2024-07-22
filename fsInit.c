@@ -24,6 +24,7 @@
 #include "mfs.h"
 #include "vcb.h"
 #include "freespace.h"
+#include "fsUtil.h"
 
 int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 {
@@ -33,6 +34,7 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     char localVCB[sizeof(VolumeControlBlock)];
     memcpy(localVCB, readBuffer, sizeof(VolumeControlBlock));
     VolumeControlBlock *vcb = (VolumeControlBlock *)localVCB;
+
 
     // If existed, doesn't do anything
     if (vcb->volumeSignature == VOLUME_SIG)

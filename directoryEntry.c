@@ -36,7 +36,14 @@ int16_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent)
     // Initialize all entries
     for (int i = 2; i < DIRECTORY_ENTRY_NUMBER; i++)
     {
+        strncpy(dir[i].name, "", MAX_FILENAME_SIZE);
         dir[i].isOccupied = 0;
+        dir[i].isDirect = 0;
+        dir[i].creationTime = 0;
+        dir[i].modificationTime = dir[i].creationTime;
+        dir[i].accessTime = dir[i].creationTime;
+        dir[i].size = 0;
+        dir[i].location = 0;
     }
 
     // Init the "." entry
@@ -73,8 +80,8 @@ int16_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent)
         dir[1].size = parent[0].size;
         dir[0].location = parent[0].location;
     }
-
-    int16_t startingBlockFromFreeSpace = allocateBlocks(blocksNeeded, startingBlock);
+    int findFreeSpace = findFreeBlock(startingBlock);
+    int16_t startingBlockFromFreeSpace = allocateBlocks(blocksNeeded, findFreeSpace);
     if (startingBlockFromFreeSpace == -1)
     {
         printf("Failed to allocate blocks for root directory\n");
