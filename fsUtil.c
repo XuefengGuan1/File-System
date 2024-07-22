@@ -2,12 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-<<<<<<< Updated upstream
-=======
-#include "fsUtil.h"
-#include "mfs.h"
-#include "directoryEntry.h"
->>>>>>> Stashed changes
 
 Path parsePath(const char *path) {
     Path parsed_path;
