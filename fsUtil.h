@@ -10,6 +10,12 @@ typedef struct {
     int token_count;
 } Path;
 
+<<<<<<< Updated upstream
 Path parsePath(const char *path);
+=======
+void parsePath(const char *path_str, Path *path);
+
+
+>>>>>>> Stashed changes
 
 #endif 
