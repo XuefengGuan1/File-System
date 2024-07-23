@@ -35,7 +35,6 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     memcpy(localVCB, readBuffer, sizeof(VolumeControlBlock));
     VolumeControlBlock *vcb = (VolumeControlBlock *)localVCB;
 
-
     // If existed, doesn't do anything
     if (vcb->volumeSignature == VOLUME_SIG)
     {
@@ -58,9 +57,11 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
         printf("initalization function error?\n");
         return -1;
     }
-    
-    // init root directory 
-    int rootDirStartingBlock = createDir(freespaceSize, blockSize,NULL);
+
+    // init root directory
+    int rootDirStartingBlock = createDir(freespaceSize, blockSize, NULL);
+
+    getRootDirectoryEntry();
     return 0;
 }
 void exitFileSystem()

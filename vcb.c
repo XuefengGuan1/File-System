@@ -31,6 +31,7 @@ int initializeVCB(uint64_t volumeSize, uint64_t blockSize)
     vcb->volumeSignature = VOLUME_SIG; // unique signature
     vcb->volumeSize = volumeSize;
     vcb->fatTableLocation = 1; // FAT is block 1, vcb is 0, root is 2
+    vcb->rootDirectoryLocation = 41;
 
     // write vcb to disk
     if (LBAwrite(&vcb, 1, 0) != 1)

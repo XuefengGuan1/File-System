@@ -1,21 +1,21 @@
 #ifndef FSUTIL_H
 #define FSUTIL_H
 #include <stdbool.h>
+#include "directoryEntry.h"
 #define MAX_PATH_LENGTH 4096
 #define MAX_TOKENS 256
 
-typedef struct {
+typedef struct
+{
     bool is_absolute;
     char *tokens[MAX_TOKENS];
     int token_count;
 } Path;
 
-<<<<<<< Updated upstream
 Path parsePath(const char *path);
-=======
-void parsePath(const char *path_str, Path *path);
+DirectoryEntry *getRootDirectoryEntry();
+DirectoryEntry *getDirectory(DirectoryEntry *currentDirectory, char *dirGoingTo);
+int makeDirectory(DirectoryEntry *currentDirectory, char *newDir);
+void deleteDirectory(DirectoryEntry *currentDirectory, char *newDir);
 
-
->>>>>>> Stashed changes
-
-#endif 
+#endif
