@@ -42,10 +42,15 @@ int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize)
     LBAwrite(fs->fat, numberOfBlocks, 1);
     return freespaceBlocks + 1;
 }
-
-int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
+int *allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
 {
-    int head = -1;
+    int *allocatedBlocks = (int *)malloc(sizeof(int) * numOfBlocksToAllocate);
+    if (allocatedBlocks == NULL)
+    {
+        printf("Failed to allocate memory for allocated blocks\n");
+        return NULL;
+    }
+
     int prevNode = -1;
     int blockNode;
 
@@ -55,16 +60,15 @@ int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
         if (blockNode == -1)
         {
             printf("No more available blocks\n");
-            return -1;
+            free(allocatedBlocks);
+            return NULL;
         }
 
         printf("Allocated block: %d\n", blockNode);
 
-        if (head == -1)
-        {
-            head = blockNode;
-        }
-        else
+        allocatedBlocks[i] = blockNode;
+
+        if (prevNode != -1)
         {
             fs->fat[prevNode] = blockNode;
         }
@@ -73,15 +77,18 @@ int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
         prevNode = blockNode;
     }
 
-    printf("Allocation complete. Head block: %d\n", head);
+    printf("Allocation complete. Head block: %d\n", allocatedBlocks[0]);
 
     if (LBAwrite(fs->fat, numberOfBlocksGlobal, 1) == -1)
     {
         printf("Error writing FAT to disk\n");
-        return -1;
+        free(allocatedBlocks);
+        return NULL;
     }
-    return head;
+
+    return allocatedBlocks;
 }
+
 
 int findFreeBlock(int freespaceSize)
 {

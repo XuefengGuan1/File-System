@@ -36,6 +36,6 @@ typedef struct DirectoryEntry
     unsigned int location;   // Starting block of the file on the disk   4 bytes
 } DirectoryEntry;
 
-int16_t createDir(int startingBlock, int blockSize,DirectoryEntry *parent);
+int8_t createDir(int startingBlock, int blockSize,DirectoryEntry *parent);
 
 #endif

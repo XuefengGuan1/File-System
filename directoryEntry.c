@@ -1,18 +1,3 @@
-/**************************************************************
- * Class::  CSC-415-02 Spring 2024
- * Name::Inderpaul Bhander
- * Student IDs::
- * GitHub-Name::
- * Group-Name::
- * Project:: Basic File System
- *
- * File:: directoryEntry.c
- *
- * Description:: This file contains the functions for managing free
- *   space using a FAT table.
- *
- **************************************************************/
-
 #include "directoryEntry.h"
 #include <stdio.h>
 #include "freespace.h"
@@ -20,11 +5,12 @@
 #include <sys/types.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 int blockSizeGlobal;
 int blocksNeededGlobal;
 
-int16_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent)
+int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent)
 {
     blockSizeGlobal = blockSize;
     DirectoryEntry dir[DIRECTORY_ENTRY_NUMBER];
@@ -67,7 +53,7 @@ int16_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent)
         dir[1].modificationTime = dir[0].creationTime;
         dir[1].accessTime = dir[0].creationTime;
         dir[1].size = byteNeeded;
-        dir[0].location = startingBlock;
+        dir[1].location = startingBlock;
     }
     else
     {
@@ -78,33 +64,40 @@ int16_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent)
         time(&dir[1].modificationTime);
         dir[1].accessTime = dir[1].modificationTime;
         dir[1].size = parent[0].size;
-        dir[0].location = parent[0].location;
+        dir[1].location = parent[0].location;
     }
-    int findFreeSpace = findFreeBlock(startingBlock);
-    int16_t startingBlockFromFreeSpace = allocateBlocks(blocksNeeded, findFreeSpace);
-    if (startingBlockFromFreeSpace == -1)
+
+    // Allocate the blocks for the directory entries
+    int *allocatedBlocks = allocateBlocks(blocksNeeded, startingBlock);
+    if (allocatedBlocks == NULL)
     {
-        printf("Failed to allocate blocks for root directory\n");
+        printf("Failed to allocate blocks for directory\n");
         return -1;
     }
-    printf("Root directory starts at block: %d\n", startingBlockFromFreeSpace);
+    printf("Directory starts at block: %d\n", allocatedBlocks[0]);
 
-    int head = startingBlockFromFreeSpace;
+    // Write the directory entries to the allocated blocks
     int entriesPerBlock = blockSize / sizeof(DirectoryEntry);
+    int entryIndex = 0;
 
     for (int i = 0; i < blocksNeeded; i++)
     {
-        int entriesToWrite = (i == blocksNeeded - 1) ? (DIRECTORY_ENTRY_NUMBER % entriesPerBlock) : entriesPerBlock;
-        if (entriesToWrite == 0)
-            entriesToWrite = entriesPerBlock;
+        DirectoryEntry blockEntries[entriesPerBlock];
+        int numEntries = (i == blocksNeeded - 1) ? (DIRECTORY_ENTRY_NUMBER - entryIndex) : entriesPerBlock;
 
-        if (LBAwrite(dir + i * entriesPerBlock, 1, head) != 1)
+        for (int j = 0; j < numEntries; j++)
         {
-            printf("Error writing root directory block %d\n", i);
+            blockEntries[j] = dir[entryIndex++];
+        }
+
+        if (LBAwrite(blockEntries, 1, allocatedBlocks[i]) != 1)
+        {
+            printf("Error writing directory block %d\n", i);
+            free(allocatedBlocks);
             return -1;
         }
-        head++;
     }
 
-    return startingBlockFromFreeSpace;
+    free(allocatedBlocks);
+    return (int8_t)allocatedBlocks[0];
 }
