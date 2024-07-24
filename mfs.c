@@ -1,15 +1,14 @@
 #include "mfs.h"
 #include "directoryEntry.h"
 #include "b_io.h"
+#include "freespace.h"
+#include "fsUtil.h"
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
 
 #define MAX_PATH_LENGTH 4096
-
-// store the cwd
-static char cwd[MAX_PATH_LENGTH] = "/";
 
 int fs_mkdir(const char *pathname, mode_t mode) {
 
@@ -34,7 +33,8 @@ int fs_mkdir(const char *pathname, mode_t mode) {
         return -1;
     }
 
-    const char *lastEleName = /*find last element function*/(pathname);
+    Path parsePathForLastEle = parsePath(parentPath);
+    const char *lastEleName = parsePathForLastEle.tokens[parsePathForLastEle.token_count];
     if(!lastEleName) {
 
         errno = ENOMEM;
@@ -42,7 +42,9 @@ int fs_mkdir(const char *pathname, mode_t mode) {
         return -1;
     }
 
-    DirectoryEntry *newDir = createDir(DEFAULT_ENTRIES, parent);
+    int parentIDX = (parent);
+ 
+    DirectoryEntry *newDir = createDir(0/*placeholder*/, 0/*placeholder*/, parent);
     if(!newDir) {
 
         free(parentPath);
@@ -50,8 +52,7 @@ int fs_mkdir(const char *pathname, mode_t mode) {
         return -1;
     }
 
-    int parentIDX = /*find unused entry function*/(parent);
-    if(parentIDX == -1) {
+   if(parentIDX == -1) {
 
         free(parentPath);
         free(newDir);
@@ -118,14 +119,15 @@ int fs_setcwd(char *pathname) {
         return -1;
     }
 
-    if(!fs_isDir(pathname)) {
+    fdDir *newDir = fs_opendir(pathname);
+    if(newDir == NULL) {
 
         errno = ENOTDIR;
         return -1;
     }
 
-    strncpy(cwd, pathname, MAX_PATH_LENGTH);
-    cwd[MAX_PATH_LENGTH - 1] = '\0';
+    cwd = newDir->directory;
+    fs_closedir(newDir);
 
     return 0;
 
@@ -138,13 +140,31 @@ char *fs_getcwd(char *pathname, size_t size) {
         return NULL;
      }
 
-    if(strlen(cwd) >= size) {
+    if(cwd == NULL) {
 
         errno = ERANGE;
         return NULL;
     }
 
-    strncpy(pathname, cwd, size);
+    // construct path by traversing up the dir tree
+    DirectoryEntry *current = cwd;
+    char tempPath[MAX_PATH_LENGTH] = "";
+    char fullPath[MAX_PATH_LENGTH] = "";
+
+    while(current != NULL && strcmp(current->name, "/") != 0) {
+
+        snprintf(tempPath, MAX_PATH_LENGTH, "/%s%s", current->name, fullPath);
+        strncpy(fullPath, tempPath, MAX_PATH_LENGTH);
+        current = getDirectory(current, pathname);
+    }
+
+    if(strlen(fullPath) >= size) {
+
+        errno = ERANGE;
+        return NULL;
+    }
+
+    strncpy(pathname, fullPath, size);
     pathname[size-1] = '\0';
 
     return pathname;

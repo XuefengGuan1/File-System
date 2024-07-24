@@ -25,6 +25,7 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#include "directoryEntry.h"
 #include "b_io.h"
 
 #include <dirent.h>
@@ -58,7 +59,7 @@ typedef struct
 	/*****TO DO:  Fill in this structure with what your open/read directory needs  *****/
 	unsigned short  d_reclen;		/* length of this record */
 	unsigned short	dirEntryPosition;	/* which directory entry position, like file pos */
-	//DE *	directory;			/* Pointer to the loaded directory you want to iterate */
+	DirectoryEntry *	directory;			/* Pointer to the loaded directory you want to iterate */
 	DIR * dirStream; 
 	struct fs_diriteminfo * di;		/* Pointer to the structure you return from read */
 	} fdDir;
@@ -94,5 +95,7 @@ struct fs_stat
 	};
 
 int fs_stat(const char *path, struct fs_stat *buf);
+
+DirectoryEntry *cwd;
 
 #endif
