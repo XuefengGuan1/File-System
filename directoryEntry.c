@@ -13,8 +13,9 @@ int blocksNeededGlobal;
 int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int childIndex)
 {
     blockSizeGlobal = blockSize;
-    DirectoryEntry dir[DIRECTORY_ENTRY_NUMBER];
-    int byteNeeded = sizeof(dir);
+    DirectoryEntry *dir = (DirectoryEntry*) malloc(DIRECTORY_ENTRY_NUMBER*sizeof(DirectoryEntry)); 
+    int byteNeeded = 56*64;
+    printf("how many bytes needed? %d\n", byteNeeded);
     int blocksNeeded = (byteNeeded + blockSize - 1) / blockSize;
     blocksNeededGlobal = blocksNeeded;
     printf("%d blocks needed\n", blocksNeeded);
@@ -23,8 +24,8 @@ int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int c
     for (int i = 2; i < DIRECTORY_ENTRY_NUMBER; i++)
     {
         strncpy(dir[i].name, "", MAX_FILENAME_SIZE);
-        dir[i].isOccupied = 0;
-        dir[i].isDirect = 0;
+        dir[i].isOccupied = false;
+        dir[i].isDirect = false;
         dir[i].creationTime = 0;
         dir[i].modificationTime = dir[i].creationTime;
         dir[i].accessTime = dir[i].creationTime;
@@ -34,8 +35,8 @@ int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int c
 
     // Init the "." entry
     strncpy(dir[0].name, ".", MAX_FILENAME_SIZE);
-    dir[0].isDirect = 1;
-    dir[0].isOccupied = 1;
+    dir[0].isDirect = true;
+    dir[0].isOccupied = true;
     time(&dir[0].creationTime);
     dir[0].modificationTime = dir[0].creationTime;
     dir[0].accessTime = dir[0].creationTime;
@@ -47,8 +48,8 @@ int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int c
     {
         // This runs if this is the root directory
         strncpy(dir[1].name, "..", MAX_FILENAME_SIZE);
-        dir[1].isDirect = 1;
-        dir[1].isOccupied = 1;
+        dir[1].isDirect = true;
+        dir[1].isOccupied = true;
         dir[1].creationTime = dir[0].creationTime;
         dir[1].modificationTime = dir[0].creationTime;
         dir[1].accessTime = dir[0].creationTime;
@@ -57,56 +58,44 @@ int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int c
     }
     else
     {
-        strncpy(dir[1].name, "..", MAX_FILENAME_SIZE);
-        dir[1].isDirect = 1;
-        dir[1].isOccupied = 1;
+        printf("dir address: %p, parent address: %p\n", (void *)dir, (void *)parent);
+        printf("sizeof(DirectoryEntry): %zu\n", sizeof(DirectoryEntry));
         dir[1].creationTime = parent[0].creationTime;
+        strncpy(dir[1].name, "..", MAX_FILENAME_SIZE);
+        dir[1].location = parent[0].location;
+        dir[1].size = parent[0].size;
+        dir[1].isDirect = true;
+
+        dir[1].isOccupied = true;
         dir[1].modificationTime = dir[1].creationTime;
         dir[1].accessTime = dir[1].creationTime;
-        dir[1].size = parent[0].size;
-        dir[1].location = parent[0].location;
     }
 
     // Allocate the blocks for the directory entries
-    int *allocatedBlocks = allocateBlocks(blocksNeeded, startingBlock);
-    if (allocatedBlocks == NULL)
-    {
-        printf("Failed to allocate blocks for directory\n");
-        return -1;
-    }
-    printf("Directory starts at block: %d\n", allocatedBlocks[0]);
+    int head = allocateBlocks(blocksNeeded, startingBlock);
 
     // Write the directory entries to the allocated blocks
     int entriesPerBlock = blockSize / sizeof(DirectoryEntry);
     int entryIndex = 0;
 
-    for (int i = 0; i < blocksNeeded; i++)
+    printf("what is head???? %d\n", head);
+    int currentMemCpyValue = 0;
+    LBAwrite(dir, 1, head);
+    int nextValue = findNextBlock(head);
+    while (nextValue != ENDBLOCK)
     {
-        DirectoryEntry blockEntries[entriesPerBlock];
-        int numEntries = (i == blocksNeeded - 1) ? (DIRECTORY_ENTRY_NUMBER - entryIndex) : entriesPerBlock;
-
-        for (int j = 0; j < numEntries; j++)
-        {
-            blockEntries[j] = dir[entryIndex++];
-        }
-
-        if (LBAwrite(blockEntries, 1, allocatedBlocks[i]) != 1)
-        {
-            printf("Error writing directory block %d\n", i);
-            free(allocatedBlocks);
-            return -1;
-        }
-        printf("what is the allocation block numbers?? %d\n", allocatedBlocks[i]);
+        currentMemCpyValue += 512;
+        LBAwrite(dir + currentMemCpyValue, 1, nextValue);
+        nextValue = findNextBlock(nextValue);
     }
 
-    free(allocatedBlocks);
-    return (int8_t)allocatedBlocks[0];
+    return head;
 }
 
 void updateParent(DirectoryEntry *directory, char *childName, int childIndex, int startBlock)
 {
     printf("*****************blocks is %d\n", directory[0].location);
-    strcpy(directory[childIndex].name, childName);
+    strncpy(directory[childIndex].name, childName, MAX_FILENAME_SIZE);
     directory[childIndex].isDirect = 1;
     directory[childIndex].isOccupied = 1;
     time(&directory[childIndex].creationTime);
@@ -115,8 +104,16 @@ void updateParent(DirectoryEntry *directory, char *childName, int childIndex, in
     directory[childIndex].size = 64;
     directory[childIndex].location = startBlock;
 
-    int returnValue = directory[0].location;
-    while(returnValue != ENDBLOCK){
-        returnValue = 1;
+    // int returnValueList[7];
+    LBAwrite(directory, 1, directory[0].location);
+    int returnValue = findNextBlock(directory[0].location);
+    int currentMemCpyValue = 0;
+    while (returnValue != ENDBLOCK)
+    {
+        currentMemCpyValue += 512;
+        LBAwrite(directory + currentMemCpyValue, 1, returnValue);
+        // returnValueList[index] = returnValue;
+        returnValue = findNextBlock(returnValue);
+        printf("return value %d\n", returnValue);
     }
 }

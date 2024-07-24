@@ -60,13 +60,22 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 
     // init root directory
     int rootDirStartingBlock = createDir(freespaceSize, blockSize, NULL, -1);
-    createDir(freespaceSize + 7, blockSize, NULL, -1);
-    createDir(freespaceSize + 14, blockSize, NULL, -1);
 
     DirectoryEntry *root = getRootDirectoryEntry();
     printf("what is root's name %d\n", root[0].location);
 
-    // makeDirectory(root, "...");
+    makeDirectory(root, "...");
+    // third make directory starts
+    printf("3RD make directory starts from here--------------------, location is %d\n", root[0].location);
+    makeDirectory(root, "....");
+    makeDirectory(root, ".....");
+    makeDirectory(root, "......");
+    makeDirectory(root, ".......");
+    makeDirectory(root, "........");
+    makeDirectory(root, ".........");
+
+    DirectoryEntry *testFindDir = getDirectory(root, "....");
+    printf("testing find diretory function: %d\n", testFindDir[0].location);
     return 0;
 }
 void exitFileSystem()

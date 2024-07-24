@@ -52,30 +52,51 @@ DirectoryEntry *getRootDirectoryEntry()
 
 DirectoryEntry *getDirectory(DirectoryEntry *currentDirectory, char *dirGoingTo)
 {
+    if (currentDirectory == NULL || dirGoingTo == NULL)
+    {
+        printf("Invalid input parameters\n");
+        return NULL;
+    }
+
     int dirExists = 0;
-    int entryPosition;
+    int entryPosition = -1;
+
     for (int i = 0; i < NUM_ENTRIES; i++)
     {
-        if (strcmp(currentDirectory[i].name, dirGoingTo) && currentDirectory[i].isOccupied == 1)
+        int result = strcmp(currentDirectory[i].name, dirGoingTo);
+        if (result == 0 && currentDirectory[i].isOccupied == 1)
         {
             entryPosition = currentDirectory[i].location;
             dirExists = 1;
             break;
         }
+        printf("Comparing '%s' with '%s', dir value is %d, result is %d\n",
+               currentDirectory[i].name, dirGoingTo, dirExists, result);
     }
+
+    printf("Directory search complete\n");
     if (dirExists == 0)
     {
+        printf("Directory not found\n");
+        return NULL;
+    }
+    printf("Directory found at position %d\n", entryPosition);
+
+    DirectoryEntry *dir = malloc(NUM_BLOCKS * BLOCK_SIZE);
+    if (dir == NULL)
+    {
+        printf("Memory allocation failed\n");
         return NULL;
     }
 
-    char buffer[NUM_BLOCKS * BLOCK_SIZE];
-    if (LBAread(buffer, NUM_BLOCKS, entryPosition) == -1)
+    if (LBAread(dir, NUM_BLOCKS, entryPosition) == -1)
     {
         printf("Error reading blocks\n");
+        free(dir);
         return NULL;
     }
 
-    DirectoryEntry *dir = (DirectoryEntry *)buffer;
+    printf("dir location is %d\n", dir[0].location);
     return dir;
 }
 
@@ -106,6 +127,7 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
     }
     updateParent(currentDirectory, childName, freeSlot, freeBlock);
     createDir(freeBlock, 512, currentDirectory, freeSlot);
+
     return 0;
 }
 

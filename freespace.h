@@ -6,9 +6,8 @@
 #include <stdbool.h>
 #include "fsLow.h"
 
-
 int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize);
-int *allocateBlocks(int numOfBlocksToAllocate, int freespaceSize);
+int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize);
 int findFreeBlock(int freespaceSize);
 int findNextBlock(int startBlock);
 

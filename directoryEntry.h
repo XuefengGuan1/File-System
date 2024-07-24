@@ -18,6 +18,7 @@
 #include <time.h>
 #include "fsLow.h"
 #include <stdint.h>
+#include <stdbool.h>
 
 #define DIRECTORY_ENTRY_NUMBER 56
 #define MAX_FILENAME_SIZE 30
@@ -26,8 +27,8 @@ typedef struct DirectoryEntry
 {
     // 64 bytes in total
     char name[MAX_FILENAME_SIZE]; // File name              30 bytes
-    char isDirect;                // Check if is a directory       1 byte
-    char isOccupied;              // Check if the directory is occupied    1 byte
+    bool isDirect;                // Check if is a directory       1 byte
+    bool isOccupied;              // Check if the directory is occupied    1 byte
     time_t creationTime;          // Creation time             8 bytes
     time_t modificationTime;      // Last modification time       8 bytes
     time_t accessTime;            // Last access time        8 bytes
@@ -39,6 +40,6 @@ int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int c
 
 // Don't use the updateParent function.
 void updateParent(DirectoryEntry *directory, char *childName, int childIndex, int startBlock);
-int writeDirectory(int blockSize, int blocksNeeded, int *allocatedBlocks, DirectoryEntry *dir);
+int writeDirectory(int blockSize, DirectoryEntry *dir);
 
 #endif
