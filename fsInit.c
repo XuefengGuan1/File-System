@@ -59,9 +59,14 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     }
 
     // init root directory
-    int rootDirStartingBlock = createDir(freespaceSize, blockSize, NULL);
+    int rootDirStartingBlock = createDir(freespaceSize, blockSize, NULL, -1);
+    createDir(freespaceSize + 7, blockSize, NULL, -1);
+    createDir(freespaceSize + 14, blockSize, NULL, -1);
 
-    getRootDirectoryEntry();
+    DirectoryEntry *root = getRootDirectoryEntry();
+    printf("what is root's name %d\n", root[0].location);
+
+    // makeDirectory(root, "...");
     return 0;
 }
 void exitFileSystem()

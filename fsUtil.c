@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "vcb.h"
+#include "freespace.h"
 // Assuming 512 is the block size; adjust if different
 #define BLOCK_SIZE 512
 #define NUM_BLOCKS 7
@@ -55,7 +56,7 @@ DirectoryEntry *getDirectory(DirectoryEntry *currentDirectory, char *dirGoingTo)
     int entryPosition;
     for (int i = 0; i < NUM_ENTRIES; i++)
     {
-        if (currentDirectory[i].name == dirGoingTo)
+        if (strcmp(currentDirectory[i].name, dirGoingTo) && currentDirectory[i].isOccupied == 1)
         {
             entryPosition = currentDirectory[i].location;
             dirExists = 1;
@@ -78,10 +79,37 @@ DirectoryEntry *getDirectory(DirectoryEntry *currentDirectory, char *dirGoingTo)
     return dir;
 }
 
-int makeDirectory(DirectoryEntry *currentDirectory, char *newDir)
+int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
 {
+    printf("what about in create directory?%d\n", currentDirectory[0].location);
+    int freeSlot = -1;
+    for (int i = 2; i < NUM_ENTRIES; i++) // Start from 2 to skip "." and ".."
+    {
+        if (currentDirectory[i].isOccupied == 0)
+        {
+            freeSlot = i;
+            break;
+        }
+    }
+
+    if (freeSlot == -1)
+    {
+        printf("No free slots in directory\n");
+        return -1;
+    }
+
+    int freeBlock = findFreeBlock(41);
+    if (freeBlock == -1)
+    {
+        printf("No free blocks available\n");
+        return -1;
+    }
+    updateParent(currentDirectory, childName, freeSlot, freeBlock);
+    createDir(freeBlock, 512, currentDirectory, freeSlot);
+    return 0;
 }
-void deleteDirectory(DirectoryEntry *currentDirectory, char *newDir)
+
+void deleteDirectory(DirectoryEntry *currentDirectory, char *childName)
 {
 }
 

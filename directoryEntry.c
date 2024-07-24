@@ -10,7 +10,7 @@
 int blockSizeGlobal;
 int blocksNeededGlobal;
 
-int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent)
+int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int childIndex)
 {
     blockSizeGlobal = blockSize;
     DirectoryEntry dir[DIRECTORY_ENTRY_NUMBER];
@@ -61,8 +61,8 @@ int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent)
         dir[1].isDirect = 1;
         dir[1].isOccupied = 1;
         dir[1].creationTime = parent[0].creationTime;
-        time(&dir[1].modificationTime);
-        dir[1].accessTime = dir[1].modificationTime;
+        dir[1].modificationTime = dir[1].creationTime;
+        dir[1].accessTime = dir[1].creationTime;
         dir[1].size = parent[0].size;
         dir[1].location = parent[0].location;
     }
@@ -96,8 +96,27 @@ int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent)
             free(allocatedBlocks);
             return -1;
         }
+        printf("what is the allocation block numbers?? %d\n", allocatedBlocks[i]);
     }
 
     free(allocatedBlocks);
     return (int8_t)allocatedBlocks[0];
+}
+
+void updateParent(DirectoryEntry *directory, char *childName, int childIndex, int startBlock)
+{
+    printf("*****************blocks is %d\n", directory[0].location);
+    strcpy(directory[childIndex].name, childName);
+    directory[childIndex].isDirect = 1;
+    directory[childIndex].isOccupied = 1;
+    time(&directory[childIndex].creationTime);
+    directory[childIndex].modificationTime = directory[1].creationTime;
+    directory[childIndex].accessTime = directory[1].creationTime;
+    directory[childIndex].size = 64;
+    directory[childIndex].location = startBlock;
+
+    int returnValue = directory[0].location;
+    while(returnValue != ENDBLOCK){
+        returnValue = 1;
+    }
 }

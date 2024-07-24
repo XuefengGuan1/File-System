@@ -15,7 +15,7 @@ typedef struct
 Path parsePath(const char *path);
 DirectoryEntry *getRootDirectoryEntry();
 DirectoryEntry *getDirectory(DirectoryEntry *currentDirectory, char *dirGoingTo);
-int makeDirectory(DirectoryEntry *currentDirectory, char *newDir);
-void deleteDirectory(DirectoryEntry *currentDirectory, char *newDir);
+int makeDirectory(DirectoryEntry *currentDirectory, char *childName);
+void deleteDirectory(DirectoryEntry *currentDirectory, char *childName);
 
 #endif

@@ -103,3 +103,10 @@ int findFreeBlock(int freespaceSize)
     // If no free space available
     return -1;
 }
+
+int findNextBlock(int startBlock){
+    if(fs->fat[startBlock] == ENDBLOCK){
+        return ENDBLOCK;
+    }
+    return fs->fat[startBlock];
+}
