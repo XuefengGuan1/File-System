@@ -10,7 +10,7 @@
 #define START_BLOCK 40
 #define NUM_ENTRIES 56
 
-Path *parsePath(char *path)
+Path *parsePath(const char *path)
 {
     // Allocate memory for the Path structure
     Path *parsed_path = (Path *)malloc(sizeof(Path));

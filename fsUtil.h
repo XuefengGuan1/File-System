@@ -12,7 +12,7 @@ typedef struct
     int token_count;
 } Path;
 
-Path *parsePath(char *path);
+Path *parsePath(const char *path);
 DirectoryEntry *getRootDirectoryEntry();
 DirectoryEntry *getDirectory(DirectoryEntry *currentDirectory, char *dirGoingTo);
 int makeDirectory(DirectoryEntry *currentDirectory, char *childName);
