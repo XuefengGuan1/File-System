@@ -9,6 +9,7 @@
  #include <stdlib.h>
 
  #define MAX_PATH_LENGTH 4096
+DirectoryEntry *myCwd = NULL;
 
  int fs_mkdir(const char *pathname, mode_t mode) {
 
@@ -50,103 +51,138 @@
      return 0;
  }
 
-// int fs_isFile(char *filename) {
+ int fs_isFile(char *filename) {
 
-//     if(filename == NULL || strlen(filename) == 0 || strlen(filename) > MAX_PATH_LENGTH) {
+    if(filename == NULL || strlen(filename) == 0 || strlen(filename) > MAX_PATH_LENGTH) {
 
-//         return 0; //invalid file name
-//     }
+        return 0; //invalid file name
+    }
 
-//     // if not a dir, then is file
-//     if(fs_isDir(filename)) {
+    // if not a dir, then is file
+    if(fs_isDir(filename)) {
 
-//         return 0;
-//     }
+        return 0;
+    }
 
-//     struct fs_stat buff;
-//     if(fs_stat(filename, &buff) == -1) {
+    struct fs_stat buff;
+    if(fs_stat(filename, &buff) == -1) {
 
-//         return 0; // file does not exist or error in stat
-//     }
+        return 0; // file does not exist or error in stat
+    }
 
-//     return 1;
-// }
+    return 1;
+}
 
-// int fs_isDir(char *pathname) {
+int fs_isDir(char *pathname) {
 
-//     if(pathname == NULL || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH) {
+    if(pathname == NULL || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH) {
 
-//         return 0; // invalid path
-//     }
+        return 0; // invalid path
+    }
 
-//     fdDir *dir = fs_opendir(pathname);
-//     if(dir == NULL) {
+    Path parsedPath = parsePath(pathname);
+    if(parsedPath.token_count == 0) {
 
-//         return 0; //not a directory
-//     }
+        return -1; // error retrieving root
+    }
 
-//     fs_closedir(dir);
-//     return 1;
-// }
+    DirectoryEntry *currentDir = getRootDirectoryEntry();
+    if(currentDir == NULL) {
 
-// int fs_setcwd(char *pathname) {
+        errno = ENOENT;
+        return -1;
+    }
 
-//     if(pathname == NULL) {
+    for(int i = 0; i < parsedPath.token_count; i++) {
 
-//         return -1;
-//     }
+        DirectoryEntry *nextDir = getDirectory(currentDir, parsedPath.tokens[i]);
 
-//     fdDir *newDir = fs_opendir(pathname);
-//     if(newDir == NULL) {
+        if(nextDir == NULL || nextDir->isDirect == false) {
+            errno = ENOTDIR;
+            return -1;
+        }
 
-//         errno = ENOTDIR;
-//         return -1;
-//     }
+        currentDir = nextDir;
+    }
 
-//     myCwd = newDir->directory;
-//     fs_closedir(newDir);
+    return 1;
+    
+}
 
-//     return 0;
+int fs_setcwd(char *pathname) {
 
-// }
+    if(pathname == NULL) {
 
-// char *fs_getcwd(char *pathname, size_t size) {
+        return -1;
+    }
 
-//     if(pathname == NULL || size == 0) {
+    Path parsedPath = parsePath(pathname);
+    if(parsedPath.token_count = 0) {
+
+        errno = ENOENT;
+        return -1;
+    }
+
+    DirectoryEntry *currentDir = getRootDirectoryEntry();
+    if(currentDir == NULL) {
+
+        errno = ENOENT;
+        return -1;
+    }
+
+    for(int i = 0; i < parsedPath.token_count; i++) {
+
+        DirectoryEntry * nextDir = getDirectory(currentDir, parsedPath.tokens[i]);
+        if(nextDir == NULL || nextDir->isDirect == false) {
+
+            errno = ENOTDIR;
+            return -1;
+        }
+        currentDir = nextDir;
+    }
+
+    myCwd = currentDir;
+
+    return 0;
+
+}
+
+char *fs_getcwd(char *pathname, size_t size) {
+
+    if(pathname == NULL || size == 0) {
  
-//         return NULL;
-//      }
+        return NULL;
+     }
 
-//     if(myCwd == NULL) {
+    if(myCwd == NULL) {
 
-//         errno = ERANGE;
-//         return NULL;
-//     }
+        errno = ERANGE;
+        return NULL;
+    }
 
-//     // construct path by traversing up the dir tree
-//     DirectoryEntry *current = myCwd;
-//     char tempPath[MAX_PATH_LENGTH] = "";
-//     char fullPath[MAX_PATH_LENGTH] = "";
+    // construct path by traversing up the dir tree
+    DirectoryEntry *current = myCwd;
+    char tempPath[MAX_PATH_LENGTH] = "";
+    char fullPath[MAX_PATH_LENGTH] = "";
 
-//     while(current != NULL && strcmp(current->name, "/") != 0) {
+    while(current != NULL && strcmp(current->name, "/") != 0) {
 
-//         snprintf(tempPath, MAX_PATH_LENGTH, "/%s%s", current->name, fullPath);
-//         strncpy(fullPath, tempPath, MAX_PATH_LENGTH);
-//         current = getDirectory(current, pathname);
-//     }
+        snprintf(tempPath, MAX_PATH_LENGTH, "/%s%s", current->name, fullPath);
+        strncpy(fullPath, tempPath, MAX_PATH_LENGTH);
+        current = getDirectory(current, pathname);
+    }
 
-//     if(strlen(fullPath) >= size) {
+    if(strlen(fullPath) >= size) {
 
-//         errno = ERANGE;
-//         return NULL;
-//     }
+        errno = ERANGE;
+        return NULL;
+    }
 
-//     strncpy(pathname, fullPath, size);
-//     pathname[size-1] = '\0';
+    strncpy(pathname, fullPath, size);
+    pathname[size-1] = '\0';
 
-//     return pathname;
-// }
-
+    return pathname;
+}
 
 fdDir *fs_opendir(const char *pathname) {
 
