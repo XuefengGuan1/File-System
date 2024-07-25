@@ -58,6 +58,7 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
         return -1;
     }
 
+
     // init root directory
     int rootDirStartingBlock = createDir(freespaceSize, blockSize, NULL, -1);
 

@@ -10,23 +10,50 @@
 #define START_BLOCK 40
 #define NUM_ENTRIES 56
 
-Path parsePath(const char *path)
+Path *parsePath(char *path)
 {
-    Path parsed_path;
-    parsed_path.is_absolute = (path[0] == '/');
-    parsed_path.token_count = 0;
-
-    char path_copy[MAX_PATH_LENGTH];
-    strncpy(path_copy, path, MAX_PATH_LENGTH);
-    path_copy[MAX_PATH_LENGTH - 1] = '\0';
-
-    char *token = strtok(path_copy, "/");
-    while (token != NULL && parsed_path.token_count < MAX_TOKENS)
-    {
-        parsed_path.tokens[parsed_path.token_count] = strdup(token);
-        parsed_path.token_count++;
-        token = strtok(NULL, "/");
+    // Allocate memory for the Path structure
+    Path *parsed_path = (Path *)malloc(sizeof(Path));
+    if (parsed_path == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
     }
+
+    // Initialize the Path structure
+    parsed_path->is_absolute = (path[0] == '/');
+    parsed_path->token_count = 0;
+
+    // Make a copy of the path to avoid modifying the original string
+    char *path_copy = strdup(path);
+    if (path_copy == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        free(parsed_path);
+        exit(EXIT_FAILURE);
+    }
+
+    // Tokenize the path and store tokens
+    char *token = strtok(path_copy, " \t/");
+    while (token != NULL) {
+        if (parsed_path->token_count >= MAX_TOKENS) {
+            fprintf(stderr, "Exceeded maximum number of tokens\n");
+            break;
+        }
+        parsed_path->tokens[parsed_path->token_count] = strdup(token);
+        if (parsed_path->tokens[parsed_path->token_count] == NULL) {
+            fprintf(stderr, "Memory allocation failed\n");
+            // Free previously allocated tokens
+            for (int i = 0; i < parsed_path->token_count; i++) {
+                free(parsed_path->tokens[i]);
+            }
+            free(parsed_path);
+            free(path_copy);
+            exit(EXIT_FAILURE);
+        }
+        parsed_path->token_count++;
+        token = strtok(NULL, " \t/");
+    }
+
+    free(path_copy); // Free the temporary copy
 
     return parsed_path;
 }
@@ -131,24 +158,12 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
     return 0;
 }
 
+int findDirectoryEntryPos(DirectoryEntry* childDirectory, char* chilName){
+    int childPositionInParent;
+    
+}
+
 void deleteDirectory(DirectoryEntry *currentDirectory, char *childName)
 {
 }
 
-// int main() {
-//     char path[MAX_PATH_LENGTH] = "/home/user/docs/file.txt";
-//     Path parsed_path = parsePath(path);
-
-//     printf("Is absolute: %d\n", parsed_path.is_absolute);
-//     printf("Token count: %d\n", parsed_path.token_count);
-//     for (int i = 0; i < parsed_path.token_count; i++) {
-//         printf("Token %d: %s\n", i, parsed_path.tokens[i]);
-//     }
-
-//     // Free allocated memory for tokens
-//     for (int i = 0; i < parsed_path.token_count; i++) {
-//         free(parsed_path.tokens[i]);
-//     }
-
-//     return 0;
-// }
