@@ -239,13 +239,12 @@ struct fs_diriteminfo *fs_readdir(fdDir *fd)
         return NULL;
     }
 
-    DirectoryEntry *entry = &fd->directory->entries[fd->dirEntryPosition];
+    DirectoryEntry* entry = &fd->directory[fd->dirEntryPosition];
     static struct fs_diriteminfo diriteminfo;
 
     diriteminfo.d_reclen = sizeof(struct fs_diriteminfo);
     diriteminfo.fileType = entry->isDirect ? FT_DIRECTORY : FT_REGFILE;
-    strncpy(diriteminfo.d_name, entry->name, 256);
-
+    strncpy(diriteminfo.d_name, entry->name, 255);
     fd->dirEntryPosition++;
 
     return &diriteminfo;
