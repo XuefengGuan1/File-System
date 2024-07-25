@@ -158,11 +158,6 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
     return 0;
 }
 
-int findDirectoryEntryPos(DirectoryEntry* childDirectory, char* chilName){
-    int childPositionInParent;
-    
-}
-
 void deleteDirectory(DirectoryEntry *currentDirectory, char *childName)
 {
 }
