@@ -1,77 +1,54 @@
-// #include "mfs.h"
-// #include "directoryEntry.h"
-// #include "b_io.h"
-// #include "freespace.h"
-// #include "fsUtil.h"
-// #include <stdio.h>
-// #include <string.h>
-// #include <errno.h>
-// #include <stdlib.h>
+ #include "mfs.h"
+ #include "directoryEntry.h"
+ #include "b_io.h"
+ #include "freespace.h"
+ #include "fsUtil.h"
+ #include <stdio.h>
+ #include <string.h>
+ #include <errno.h>
+ #include <stdlib.h>
 
-// #define MAX_PATH_LENGTH 4096
+ #define MAX_PATH_LENGTH 4096
 
-// int fs_mkdir(const char *pathname, mode_t mode) {
+ int fs_mkdir(const char *pathname, mode_t mode) {
 
-//     if(!pathname || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH) {
+     if(!pathname || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH) {
 
-//         errno = EINVAL;
-//         return -1;
-//     }
+         errno = EINVAL;
+         return -1;
+     }
 
-//     char *parentPath = strdup(pathname);
-//     if(!parentPath) {
+     DirectoryEntry * getRoot = getRootDirectoryEntry();
+     if(!getRoot) {
 
-//         errno = ENOMEM;
-//         return -1;
-//     }
+         errno = ENOENT;
+         return -1;
+     }
 
-//     DirectoryEntry * parent = fs_opendir(parentPath);
-//     if(!parent) {
+     Path parsePathname = parsePath(pathname);
+     char *lastEleName = parsePathname.tokens[parsePathname.token_count];
+     if(!lastEleName) {
 
-//         free(parentPath);
-//         errno = ENOENT;
-//         return -1;
-//     }
+         errno = ENOMEM;
+         return -1;
+     }
 
-//     Path parsePathForLastEle = parsePath(parentPath);
-//     const char *lastEleName = parsePathForLastEle.tokens[parsePathForLastEle.token_count];
-//     if(!lastEleName) {
+      DirectoryEntry * parent = getDirectory(getRoot, parsePathname.tokens[0]);
+      int i = 1;
+      while(parsePathname.tokens[i] != NULL) {
+          
+         parent = getDirectory(parent, parsePathname.tokens[i]);
+         i++;
+      }
 
-//         errno = ENOMEM;
-//         free(parentPath);
-//         return -1;
-//     }
+      if(makeDirectory(parent, lastEleName) != 0) {
 
-//     int parentIDX = (parent);
- 
-//     DirectoryEntry *newDir = createDir(0/*placeholder*/, 0/*placeholder*/, parent);
-//     if(!newDir) {
+         errno = ENOENT;
+         return -1;
+      }
 
-//         free(parentPath);
-//         errno = ENOMEM;
-//         return -1;
-//     }
-
-//    if(parentIDX == -1) {
-
-//         free(parentPath);
-//         free(newDir);
-//         errno = ENOSPC;
-//         return -1;
-//     }
-
-//     memcpy(&(parent[parentIDX]), newDir, sizeof(DirectoryEntry));
-
-//     strcpy(parent[parentIDX].name, lastEleName);
-
-//     // save entry to disk
-//     // *here*
-
-//     free(parentPath);
-//     free(newDir);
-
-//     return 0;
-// }
+     return 0;
+ }
 
 // int fs_isFile(char *filename) {
 
