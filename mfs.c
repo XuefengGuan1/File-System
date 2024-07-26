@@ -17,40 +17,51 @@ int fs_mkdir(const char *pathname, mode_t mode)
     if (!pathname || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH)
     {
 
-        errno = EINVAL;
+        printf("invalid parameter for oathname");
         return -1;
     }
-    
-    DirectoryEntry *getRoot = getRootDirectoryEntry();
-    if (!getRoot)
+
+    DirectoryEntry *getDir = (DirectoryEntry*)malloc(DIRECTORY_ENTRY_NUMBER*sizeof(DirectoryEntry));
+    getDir = getRootDirectoryEntry();
+    if (!getDir)
     {
 
-        errno = ENOENT;
+        printf("is getRoot wrong       !!!!!!!!!!!\n");
         return -1;
     }
 
+
+
     Path* parsePathname = parsePath(pathname);
-    char *lastEleName = parsePathname->tokens[parsePathname->token_count];
+    char *lastEleName = parsePathname->tokens[parsePathname->token_count]-1;
     if (!lastEleName)
     {
 
-        errno = ENOMEM;
+        printf("is lastELE wrong       !!!!!!!!!!!\n");
         return -1;
     }
 
-    DirectoryEntry *parent = getDirectory(getRoot, parsePathname->tokens[0]);
-    int i = 1;
-    while (parsePathname->tokens[i] != NULL)
+    int i = 0;
+    
+   // printf("did this part run       !!!!!!!!!!!\n");
+    
+   // printf("What is the token_count? %d\n", parsePathname->token_count);
+   // printf("check value of getDIr: %d\n", getDir[i].location);
+
+    while (i < parsePathname->token_count -1)
     {
 
-        parent = getDirectory(parent, parsePathname->tokens[i]);
+        getDir = getDirectory(getDir, parsePathname->tokens[i]);
+        
+       // printf("check value of getDIr: %d\n", getDir[i].location);
+
         i++;
     }
 
-    if (makeDirectory(parent, lastEleName) != 0)
+    if (makeDirectory(getDir, lastEleName) != 0)
     {
 
-        errno = ENOENT;
+        printf("make dir failed");
         return -1;
     }
 
