@@ -204,33 +204,33 @@ int fs_mkdir(const char *pathname, mode_t mode)
 //     return pathname;
 // }
 
-// fdDir *fs_opendir(const char *pathname)
-// {
+fdDir *fs_opendir(const char *pathname)
+{
 
-//     int count;
+    int count;
 
-//     Path *pathcopy = parsePath(pathname);
+    Path *pathcopy = parsePath(pathname);
 
-//     DirectoryEntry *dir = getRootDirectoryEntry();
+    DirectoryEntry *dir = getRootDirectoryEntry();
 
-//     int i = 0;
-//     while (pathcopy->tokens[i] == NULL)
-//     {
-//         DirectoryEntry *dir = getDirectory(dir, pathcopy->tokens[i]); // current loaded directory
-//     }
+    int i = 0;
+    while (pathcopy->tokens[i] == NULL)
+    {
+        DirectoryEntry *dir = getDirectory(dir, pathcopy->tokens[i]); // current loaded directory
+    }
 
-//     fdDir *fd = (fdDir *)malloc(sizeof(fdDir));
-//     if (fd == NULL)
-//     {
-//         return NULL; // Memory allocation failed
-//     }
+    fdDir *fd = (fdDir *)malloc(sizeof(fdDir));
+    if (fd == NULL)
+    {
+        return NULL; // Memory allocation failed
+    }
 
-//     fd->d_reclen = sizeof(fdDir);
-//     fd->dirEntryPosition = 0;
-//     fd->directory = dir;
+    fd->d_reclen = sizeof(fdDir);
+    fd->dirEntryPosition = 0;
+    fd->directory = dir;
 
-//     return fd;
-// }
+    return fd;
+}
 
 // struct fs_diriteminfo *fs_readdir(fdDir *fd)
 // {
