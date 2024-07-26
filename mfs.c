@@ -250,6 +250,18 @@ int fs_mkdir(const char *pathname, mode_t mode)
 //     return &diriteminfo;
 // }
 
+// int fs_rmdir(const char *pathname){
+//     Path parsed = parsePath(pathname);
+//     if (cwd == parsed.tokens[parsed.tokens[parsed.token_count-1]]);
+//     //if getDir true;
+//     //call deleteDE
+    
+//     if (parsed.is_absolute){
+
+//     }
+    
+// }
+
 // int fs_closedir(fdDir *fd)
 // {
 //     if (fd == NULL)

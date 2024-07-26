@@ -5,7 +5,7 @@
 #define ENDBLOCK -2  // A value that indicates the end of a chain
 #include <stdbool.h>
 #include "fsLow.h"
-
+int freespaceBlocksGlobal;
 int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize);
 int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize);
 int findFreeBlock(int freespaceSize);
