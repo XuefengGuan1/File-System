@@ -82,7 +82,7 @@ int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
         return -1;
     }
 
-    return head;
+    return head; 
 }
 
 int findFreeBlock(int freespaceSize)

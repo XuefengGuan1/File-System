@@ -20,7 +20,7 @@ int fs_mkdir(const char *pathname, mode_t mode)
         errno = EINVAL;
         return -1;
     }
-
+    
     DirectoryEntry *getRoot = getRootDirectoryEntry();
     if (!getRoot)
     {

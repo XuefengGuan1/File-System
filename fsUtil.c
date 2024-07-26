@@ -85,6 +85,8 @@ DirectoryEntry *getDirectory(DirectoryEntry *currentDirectory, char *dirGoingTo)
         return NULL;
     }
 
+    printf("what is the parent's directory in the getDIrectory function? %d\n", currentDirectory[0].location);
+
     int dirExists = 0;
     int entryPosition = -1;
 
