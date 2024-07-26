@@ -65,12 +65,6 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     // init root directory
     int rootDirStartingBlock = createDir(freespaceSize, blockSize, NULL, -1);
 
-
-
-
-
-
-
     DirectoryEntry *root = getRootDirectoryEntry();
     // printf("what is root's name %d\n", root[0].location);
 
@@ -85,14 +79,16 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     makeDirectory(root, ".........");
 
     DirectoryEntry *testFindDir = getDirectory(root, "...");
-    makeDirectory(testFindDir,"new");
+    makeDirectory(testFindDir, "new");
+    makeDirectory(testFindDir, "newnew");
+
     printf("testing find diretory function: %d\n", testFindDir[0].location);
 
+    fs_mkdir("/.../newnew", 3);
 
-
-    //test parsePath
-    Path* testPath = parsePath("/welcome/hello/hi");
-    printf("test path function %s\n", testPath->tokens[0]);
+    // test parsePath
+    // Path* testPath = parsePath("/welcome/hello/hi");
+    // printf("test path function %s\n", testPath->tokens[0]);
     return 0;
 }
 void exitFileSystem()
