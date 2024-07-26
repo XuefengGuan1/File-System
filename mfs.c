@@ -21,8 +21,7 @@ int fs_mkdir(const char *pathname, mode_t mode)
         return -1;
     }
 
-    DirectoryEntry *getDir = (DirectoryEntry*)malloc(DIRECTORY_ENTRY_NUMBER*sizeof(DirectoryEntry));
-    getDir = getRootDirectoryEntry();
+    DirectoryEntry *getDir = getRootDirectory();
     if (!getDir)
     {
 
@@ -33,7 +32,12 @@ int fs_mkdir(const char *pathname, mode_t mode)
 
 
     Path* parsePathname = parsePath(pathname);
-    char *lastEleName = parsePathname->tokens[parsePathname->token_count]-1;
+    if(!parsePathname) {
+
+        printf("parsed pathname error");
+        return -1;
+    }
+    char *lastEleName = parsePathname->tokens[parsePathname->token_count-1];
     if (!lastEleName)
     {
 
@@ -43,17 +47,23 @@ int fs_mkdir(const char *pathname, mode_t mode)
 
     int i = 0;
     
-   // printf("did this part run       !!!!!!!!!!!\n");
+    //printf("did this part run       !!!!!!!!!!!\n");
     
-   // printf("What is the token_count? %d\n", parsePathname->token_count);
-   // printf("check value of getDIr: %d\n", getDir[i].location);
+    printf("What is the token_count? %d\n", parsePathname->token_count);
+    printf("check value of getDIr: %d\n", getDir[i].location);
 
     while (i < parsePathname->token_count -1)
     {
 
         getDir = getDirectory(getDir, parsePathname->tokens[i]);
-        
-       // printf("check value of getDIr: %d\n", getDir[i].location);
+       
+        if(!getDir) {
+
+            printf("get directroy error");
+            return -1;
+        }
+
+        printf("check value of getDIr: %d\n", getDir[i].location);
 
         i++;
     }
