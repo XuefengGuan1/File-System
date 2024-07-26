@@ -21,6 +21,7 @@
 #include "freespace.h"
 
 uint64_t numberOfBlocksGlobal;
+int freespaceBlocksGlobal;
 
 typedef struct Freespace
 {
@@ -82,7 +83,7 @@ int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
         return -1;
     }
 
-    return head; 
+    return head;
 }
 
 int findFreeBlock(int freespaceSize)
