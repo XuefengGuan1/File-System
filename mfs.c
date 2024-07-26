@@ -21,7 +21,7 @@ int fs_mkdir(const char *pathname, mode_t mode)
         return -1;
     }
 
-    DirectoryEntry *getDir = getRootDirectory();
+    DirectoryEntry *getDir = getRootDirectoryEntry();
     if (!getDir)
     {
 
