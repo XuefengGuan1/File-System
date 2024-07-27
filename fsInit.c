@@ -82,6 +82,13 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     printf("testing find diretory function: %d\n", testFindDir[0].location);
 
     fs_mkdir("/.../newnewnew", 3);
+    fs_setcwd("/.../newnewnew");
+    char * returnVALUE = fs_getcwd("/.../newnewnew", 7);
+    printf("what is the return value %s\n", returnVALUE);
+
+    // int x = fs_isFile("/.../newnewnew");
+    // int y = fs_isDir("/.../newnewnew");
+    // printf("is a file? %d, is a dir? %d\n", x, y);
 
 //    char *testDir_file = "/.../newnewnew";
 //    char *passWrongTest = "test should fail";

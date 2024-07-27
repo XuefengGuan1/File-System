@@ -10,13 +10,13 @@
 
 #define MAX_PATH_LENGTH 4096
 DirectoryEntry *myCwd = NULL;
+char *currentWorkingDirectory;
 
 int fs_mkdir(const char *pathname, mode_t mode)
 {
 
     if (!pathname || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH)
     {
-
         printf("invalid parameter for oathname");
         return -1;
     }
@@ -29,15 +29,14 @@ int fs_mkdir(const char *pathname, mode_t mode)
         return -1;
     }
 
-
-
-    Path* parsePathname = parsePath(pathname);
-    if(!parsePathname) {
+    Path *parsePathname = parsePath(pathname);
+    if (!parsePathname)
+    {
 
         printf("parsed pathname error");
         return -1;
     }
-    char *lastEleName = parsePathname->tokens[parsePathname->token_count-1];
+    char *lastEleName = parsePathname->tokens[parsePathname->token_count - 1];
     if (!lastEleName)
     {
 
@@ -46,24 +45,24 @@ int fs_mkdir(const char *pathname, mode_t mode)
     }
 
     int i = 0;
-    
-    //printf("did this part run       !!!!!!!!!!!\n");
-    
-    //printf("What is the token_count? %d\n", parsePathname->token_count);
-    //printf("check value of getDIr: %d\n", getDir[i].location);
 
-    while (i < parsePathname->token_count -1)
+    // printf("did this part run       !!!!!!!!!!!\n");
+
+    // printf("What is the token_count? %d\n", parsePathname->token_count);
+    // printf("check value of getDIr: %d\n", getDir[i].location);
+
+    while (i < parsePathname->token_count - 1)
     {
 
         getDir = getDirectory(getDir, parsePathname->tokens[i]);
-       
-        if(!getDir) {
+        if (!getDir)
+        {
 
             printf("get directroy error");
             return -1;
         }
 
-        //printf("check value of getDIr: %d\n", getDir[i].location);
+        // printf("check value of getDIr: %d\n", getDir[i].location);
 
         i++;
     }
@@ -78,147 +77,135 @@ int fs_mkdir(const char *pathname, mode_t mode)
     return 0;
 }
 
- int fs_isFile(char *filename)
- {
+int fs_isFile(char *filename)
+{
 
-     if (filename == NULL || strlen(filename) == 0 || strlen(filename) > MAX_PATH_LENGTH)
-     {
+    if (filename == NULL || strlen(filename) == 0 || strlen(filename) > MAX_PATH_LENGTH)
+    {
 
-         return 0; // invalid file name
-     }
+        return -1; // invalid file name
+    }
 
-     // if not a dir, then is file
-     if (fs_isDir(filename) == 0)
-     {
+    // if not a dir, then is file
+    if (fs_isDir(filename) == 0)
+    {
 
-         return 0;
-     }
+        return -1;
+    }
 
-     return 1;
- }
+    return 0;
+}
 
- int fs_isDir(char *pathname)
- {
+int fs_isDir(char *pathname)
+{
 
-     if (pathname == NULL || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH)
-     {
+    if (pathname == NULL || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH)
+    {
 
-         return 0; // invalid path
-     }
+        return -1; // invalid path
+    }
 
-     Path* parsedPath = parsePath(pathname);
-     if (parsedPath->token_count == 0)
-     {
+    Path *parsedPath = parsePath(pathname);
+    if (parsedPath->token_count == 0)
+    {
 
-         printf("error: invalid path parsed");
-         return -1; 
-     }
+        printf("error: invalid path parsed");
+        return -1;
+    }
 
-     DirectoryEntry *currentDir = getRootDirectoryEntry();
-     if (currentDir == NULL)
-     {
+    DirectoryEntry *currentDir = getRootDirectoryEntry();
+    if (currentDir == NULL)
+    {
 
-         printf("error: invalid root ");
-         return -1;
-     }
+        printf("error: invalid root ");
+        return -1;
+    }
 
-     for (int i = 0; i < parsedPath->token_count; i++)
-     {
+    for (int i = 0; i < parsedPath->token_count; i++)
+    {
 
-         DirectoryEntry *nextDir = getDirectory(currentDir, parsedPath->tokens[i]);
+        DirectoryEntry *nextDir = getDirectory(currentDir, parsedPath->tokens[i]);
 
-         if (nextDir == NULL || nextDir->isDirect == false)
-         {
-             printf("error: not a directory");;
-             return 0;
-         }
+        if (nextDir == NULL || nextDir->isDirect == false)
+        {
+            printf("error: not a directory");
+            ;
+            return -1;
+        }
 
-         currentDir = nextDir;
-     }
+        currentDir = nextDir;
+    }
 
-     return 1;
- }
+    return 0;
+}
 
- int fs_setcwd(char *pathname) {
+int fs_setcwd(char *pathname)
+{
+    currentWorkingDirectory = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
+    if (pathname == NULL)
+    {
 
-     if(pathname == NULL) {
+        return -1;
+    }
 
-         return -1;
-     }
+    Path *parsedPath = parsePath(pathname);
+    if (parsedPath->token_count == 0)
+    {
 
-     Path *parsedPath = parsePath(pathname);
-     if(parsedPath->token_count == 0) {
+        printf("error: invlid pare path");
+        return -1;
+    }
 
-         printf("error: invlid pare path");
-         return -1;
-     }
+    DirectoryEntry *currentDir = getRootDirectoryEntry();
+    if (currentDir == NULL)
+    {
 
-     DirectoryEntry *currentDir = getRootDirectoryEntry();
-     if(currentDir == NULL) {
+        printf("error: invalid root");
+        return -1;
+    }
 
-         printf("error: invalid root");
-         return -1;
-     }
+    for (int i = 0; i < parsedPath->token_count; i++)
+    {
+        DirectoryEntry *nextDir = getDirectory(currentDir, parsedPath->tokens[i]);
+        if (nextDir == NULL || nextDir->isDirect == false)
+        {
 
-     for(int i = 0; i < parsedPath->token_count; i++) {
+            printf("error: not a directory");
+            return -1;
+        }
+        currentDir = nextDir;
+    }
 
-         DirectoryEntry * nextDir = getDirectory(currentDir, parsedPath->tokens[i]);
-         if(nextDir == NULL || nextDir->isDirect == false) {
+    strcpy(currentWorkingDirectory, pathname);
+    myCwd = currentDir;
+    printf("what is my current working directory's address? %d\n", myCwd[0].location);
 
-             printf("error: not a directory");
-             return -1;
-         }
-         currentDir = nextDir;
-     }
+    return 0;
+}
 
-     myCwd = currentDir;
+char *fs_getcwd(char *pathname, size_t size)
+{
+    pathname = (char*) malloc(sizeof(char) * MAX_PATH_LENGTH);
+    if (pathname == NULL || size == 0)
+    {
 
-     return 0;
+        printf("error: pathname or size invalid");
+        return NULL;
+    }
+    printf("runne here\n");
+    // if (myCwd == NULL)
+    // {
 
- }
-
- char *fs_getcwd(char *pathname, size_t size)
- {
-
-     if (pathname == NULL || size == 0)
-     {
-
-         printf("error: pathname or size invalid");
-         return NULL;
-     }
-
-     if (myCwd == NULL)
-     {
-
-         printf("error: myCwd null");
-         return NULL;
-     }
-
-     // construct path by traversing up the dir tree
-     DirectoryEntry *current = myCwd;
-     char tempPath[MAX_PATH_LENGTH] = "";
-     char fullPath[MAX_PATH_LENGTH] = "";
-
-     while (current != NULL && strcmp(current->name, "/") != 0)
-     {
-
-        // snprintf(tempPath, MAX_PATH_LENGTH, "/%s%s", current->name, fullPath);
-         strncpy(fullPath, tempPath, MAX_PATH_LENGTH);
-         current = getDirectory(current, pathname);
-     }
-
-     if (strlen(fullPath) >= size)
-     {
-
-         printf("error: length of path greater than parameter size");
-         return NULL;
-     }
-
-     strncpy(pathname, fullPath, size);
-     pathname[size - 1] = '\0';
-
-     return pathname;
- }
+    //     printf("error: myCwd null");
+    //     return NULL;
+    // }
+    printf("happened here?>\n");
+    // construct path by traversing up the dir tree
+    strncpy(pathname, currentWorkingDirectory, size);
+    printf("what is the path %s\n", pathname);
+    free(pathname);
+    return pathname;
+}
 
 fdDir *fs_opendir(const char *pathname)
 {
@@ -271,11 +258,11 @@ fdDir *fs_opendir(const char *pathname)
 //     if (cwd == parsed.tokens[parsed.tokens[parsed.token_count-1]]);
 //     //if getDir true;
 //     //call deleteDE
-    
+
 //     if (parsed.is_absolute){
 
 //     }
-    
+
 // }
 
 // int fs_closedir(fdDir *fd)

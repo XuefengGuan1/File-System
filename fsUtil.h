@@ -16,6 +16,7 @@ Path *parsePath(const char *path);
 DirectoryEntry *getRootDirectoryEntry();
 DirectoryEntry *getDirectory(DirectoryEntry *currentDirectory, char *dirGoingTo);
 int makeDirectory(DirectoryEntry *currentDirectory, char *childName);
-void deleteDirectory(DirectoryEntry *currentDirectory, char *childName);
+// void deleteDirectory(DirectoryEntry *currentDirectory, char *childName);
+char* mergePath(const char *leftPart, const char* rightPart, char* buffer);
 
 #endif

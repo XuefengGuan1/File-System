@@ -14,7 +14,8 @@ Path *parsePath(const char *path)
 {
     // Allocate memory for the Path structure
     Path *parsed_path = (Path *)malloc(sizeof(Path));
-    if (parsed_path == NULL) {
+    if (parsed_path == NULL)
+    {
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
     }
@@ -25,7 +26,8 @@ Path *parsePath(const char *path)
 
     // Make a copy of the path to avoid modifying the original string
     char *path_copy = strdup(path);
-    if (path_copy == NULL) {
+    if (path_copy == NULL)
+    {
         fprintf(stderr, "Memory allocation failed\n");
         free(parsed_path);
         exit(EXIT_FAILURE);
@@ -33,16 +35,20 @@ Path *parsePath(const char *path)
 
     // Tokenize the path and store tokens
     char *token = strtok(path_copy, " \t/");
-    while (token != NULL) {
-        if (parsed_path->token_count >= MAX_TOKENS) {
+    while (token != NULL)
+    {
+        if (parsed_path->token_count >= MAX_TOKENS)
+        {
             fprintf(stderr, "Exceeded maximum number of tokens\n");
             break;
         }
         parsed_path->tokens[parsed_path->token_count] = strdup(token);
-        if (parsed_path->tokens[parsed_path->token_count] == NULL) {
+        if (parsed_path->tokens[parsed_path->token_count] == NULL)
+        {
             fprintf(stderr, "Memory allocation failed\n");
             // Free previously allocated tokens
-            for (int i = 0; i < parsed_path->token_count; i++) {
+            for (int i = 0; i < parsed_path->token_count; i++)
+            {
                 free(parsed_path->tokens[i]);
             }
             free(parsed_path);
@@ -160,7 +166,15 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
     return 0;
 }
 
-void deleteDirectory(DirectoryEntry *currentDirectory, char *childName)
+char *mergePath(const char *leftPart, const char *rightPart, char* buffer)
 {
+    strcat(buffer, rightPart);
+
+    printf("what is the result? %s\n", buffer);
+    return buffer;
 }
+
+// void deleteDirectory(DirectoryEntry *currentDirectory, char *childName)
+// {
+// }
 
