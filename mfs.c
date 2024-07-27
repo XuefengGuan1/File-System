@@ -25,7 +25,7 @@ int fs_mkdir(const char *pathname, mode_t mode)
     if (!getDir)
     {
 
-        printf("is getRoot wrong       !!!!!!!!!!!\n");
+        printf("error: invalid root\n");
         return -1;
     }
 
@@ -41,7 +41,7 @@ int fs_mkdir(const char *pathname, mode_t mode)
     if (!lastEleName)
     {
 
-        printf("is lastELE wrong       !!!!!!!!!!!\n");
+        printf("error: invalid last element\n");
         return -1;
     }
 
@@ -49,8 +49,8 @@ int fs_mkdir(const char *pathname, mode_t mode)
     
     //printf("did this part run       !!!!!!!!!!!\n");
     
-    printf("What is the token_count? %d\n", parsePathname->token_count);
-    printf("check value of getDIr: %d\n", getDir[i].location);
+    //printf("What is the token_count? %d\n", parsePathname->token_count);
+    //printf("check value of getDIr: %d\n", getDir[i].location);
 
     while (i < parsePathname->token_count -1)
     {
@@ -63,7 +63,7 @@ int fs_mkdir(const char *pathname, mode_t mode)
             return -1;
         }
 
-        printf("check value of getDIr: %d\n", getDir[i].location);
+        //printf("check value of getDIr: %d\n", getDir[i].location);
 
         i++;
     }
@@ -80,150 +80,144 @@ int fs_mkdir(const char *pathname, mode_t mode)
 
 // int fs_isFile(char *filename)
 // {
-
+//
 //     if (filename == NULL || strlen(filename) == 0 || strlen(filename) > MAX_PATH_LENGTH)
 //     {
-
+//
 //         return 0; // invalid file name
 //     }
-
+//
 //     // if not a dir, then is file
 //     if (fs_isDir(filename))
 //     {
-
+//
 //         return 0;
 //     }
-
-//     struct fs_stat buff;
-//     if (fs_stat(filename, &buff) == -1)
-//     {
-
-//         return 0; // file does not exist or error in stat
-//     }
-
+//
 //     return 1;
 // }
 
-// int fs_isDir(char *pathname)
-// {
+ int fs_isDir(char *pathname)
+ {
 
-//     if (pathname == NULL || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH)
-//     {
+     if (pathname == NULL || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH)
+     {
 
-//         return 0; // invalid path
-//     }
+         return 0; // invalid path
+     }
 
-//     Path* parsedPath = parsePath(pathname);
-//     if (parsedPath->token_count == 0)
-//     {
+     Path* parsedPath = parsePath(pathname);
+     if (parsedPath->token_count == 0)
+     {
 
-//         return -1; // error retrieving root
-//     }
+         return -1; // error retrieving root
+     }
 
-//     DirectoryEntry *currentDir = getRootDirectoryEntry();
-//     if (currentDir == NULL)
-//     {
+     DirectoryEntry *currentDir = getRootDirectoryEntry();
+     if (currentDir == NULL)
+     {
 
-//         errno = ENOENT;
-//         return -1;
-//     }
+         printf("error: invalid root ");
+         return -1;
+     }
 
-//     for (int i = 0; i < parsedPath->token_count; i++)
-//     {
+     for (int i = 0; i < parsedPath->token_count; i++)
+     {
 
-//         DirectoryEntry *nextDir = getDirectory(currentDir, parsedPath->tokens[i]);
+         DirectoryEntry *nextDir = getDirectory(currentDir, parsedPath->tokens[i]);
 
-//         if (nextDir == NULL || nextDir->isDirect == false)
-//         {
-//             errno = ENOTDIR;
-//             return -1;
-//         }
+         if (nextDir == NULL || nextDir->isDirect == false)
+         {
+             printf("error: not a directory");;
+             return -1;
+         }
 
-//         currentDir = nextDir;
-//     }
+         currentDir = nextDir;
+     }
 
-//     return 1;
-// }
+     return 1;
+ }
 
-// int fs_setcwd(char *pathname) {
+ int fs_setcwd(char *pathname) {
 
-//     if(pathname == NULL) {
+     if(pathname == NULL) {
 
-//         return -1;
-//     }
+         return -1;
+     }
 
-//     Path *parsedPath = parsePath(pathname);
-//     if(parsedPath->token_count = 0) {
+     Path *parsedPath = parsePath(pathname);
+     if(parsedPath->token_count == 0) {
 
-//         errno = ENOENT;
-//         return -1;
-//     }
+         printf("error: invlid pare path");
+         return -1;
+     }
 
-//     DirectoryEntry *currentDir = getRootDirectoryEntry();
-//     if(currentDir == NULL) {
+     DirectoryEntry *currentDir = getRootDirectoryEntry();
+     if(currentDir == NULL) {
 
-//         errno = ENOENT;
-//         return -1;
-//     }
+         printf("error: invalid root");
+         return -1;
+     }
 
-//     for(int i = 0; i < parsedPath->token_count; i++) {
+     for(int i = 0; i < parsedPath->token_count; i++) {
 
-//         DirectoryEntry * nextDir = getDirectory(currentDir, parsedPath->tokens[i]);
-//         if(nextDir == NULL || nextDir->isDirect == false) {
+         DirectoryEntry * nextDir = getDirectory(currentDir, parsedPath->tokens[i]);
+         if(nextDir == NULL || nextDir->isDirect == false) {
 
-//             errno = ENOTDIR;
-//             return -1;
-//         }
-//         currentDir = nextDir;
-//     }
+             printf("error: not a directory");
+             return -1;
+         }
+         currentDir = nextDir;
+     }
 
-//     myCwd = currentDir;
+     myCwd = currentDir;
 
-//     return 0;
+     return 0;
 
-// }
+ }
 
-// char *fs_getcwd(char *pathname, size_t size)
-// {
+ char *fs_getcwd(char *pathname, size_t size)
+ {
 
-//     if (pathname == NULL || size == 0)
-//     {
+     if (pathname == NULL || size == 0)
+     {
 
-//         return NULL;
-//     }
+         printf("error: pathname or size invalid");
+         return NULL;
+     }
 
-//     if (myCwd == NULL)
-//     {
+     if (myCwd == NULL)
+     {
 
-//         errno = ERANGE;
-//         return NULL;
-//     }
+         printf("error: myCwd null");
+         return NULL;
+     }
 
-//     // construct path by traversing up the dir tree
-//     DirectoryEntry *current = myCwd;
-//     char tempPath[MAX_PATH_LENGTH] = "";
-//     char fullPath[MAX_PATH_LENGTH] = "";
+     // construct path by traversing up the dir tree
+     DirectoryEntry *current = myCwd;
+     char tempPath[MAX_PATH_LENGTH] = "";
+     char fullPath[MAX_PATH_LENGTH] = "";
 
-//     while (current != NULL && strcmp(current->name, "/") != 0)
-//     {
+     while (current != NULL && strcmp(current->name, "/") != 0)
+     {
 
-//         snprintf(tempPath, MAX_PATH_LENGTH, "/%s%s", current->name, fullPath);
-//         strncpy(fullPath, tempPath, MAX_PATH_LENGTH);
-//         current = getDirectory(current, pathname);
-//     }
+        // snprintf(tempPath, MAX_PATH_LENGTH, "/%s%s", current->name, fullPath);
+         strncpy(fullPath, tempPath, MAX_PATH_LENGTH);
+         current = getDirectory(current, pathname);
+     }
 
-//     if (strlen(fullPath) >= size)
-//     {
+     if (strlen(fullPath) >= size)
+     {
 
-//         errno = ERANGE;
-//         return NULL;
-//     }
+         printf("error: length of path greater than parameter size");
+         return NULL;
+     }
 
-//     strncpy(pathname, fullPath, size);
-//     pathname[size - 1] = '\0';
+     strncpy(pathname, fullPath, size);
+     pathname[size - 1] = '\0';
 
-//     return pathname;
-// }
+     return pathname;
+ }
 
 fdDir *fs_opendir(const char *pathname)
 {
