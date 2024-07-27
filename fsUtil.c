@@ -168,8 +168,8 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
 
 char *mergePath(const char *leftPart, const char *rightPart, char *buffer)
 {
+    strcpy(buffer, leftPart);
     strcat(buffer, rightPart);
-
     printf("what is the result? %s\n", buffer);
     return buffer;
 }
