@@ -14,11 +14,14 @@ char *currentWorkingDirectory;
 
 int fs_mkdir(const char *pathname, mode_t mode)
 {
-
-    char buffer[MAX_PATH_LENGTH];
-    if(strncmp(pathname, ".", 1) == 0) {
-
+    char *buffer = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
+    if (strncmp(pathname, ".", 1) == 0 || strncmp(pathname, "..", 2) == 0)
+    {
         mergePath(currentWorkingDirectory, pathname, buffer);
+    }
+    else
+    {
+        strcpy(buffer, pathname);
     }
 
     if (!pathname || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH)
@@ -51,26 +54,21 @@ int fs_mkdir(const char *pathname, mode_t mode)
     }
 
     int i = 0;
-
-    // printf("did this part run       !!!!!!!!!!!\n");
-
-    // printf("What is the token_count? %d\n", parsePathname->token_count);
-    // printf("check value of getDIr: %d\n", getDir[i].location);
-
     while (i < parsePathname->token_count - 1)
     {
 
-        if(strcmp(parsePathname->tokens[i], ".") == 0) {
-       
-            parsePathname->tokens[i] = parsePathname->tokens[i-1];
-            getDir = getDirectory(getDir, parsePathname->tokens[i] );
-        } else if(strcmp(parsePathname->tokens[i], "..") == 0) {
-
+        if (strcmp(parsePathname->tokens[i], ".") == 0)
+        {
+            i++;
+            continue;
+        }
+        else if (strcmp(parsePathname->tokens[i], "..") == 0)
+        {
             getDir = parentDirectory(getDir);
-            parsePathname->tokens[i] = parsePathname->tokens[i-2];
-        } else {
-            getDir= getDirectory(getDir, parsePathname->tokens[i]);
-            
+        }
+        else
+        {
+            getDir = getDirectory(getDir, parsePathname->tokens[i]);
         }
         if (!getDir)
         {
@@ -78,9 +76,6 @@ int fs_mkdir(const char *pathname, mode_t mode)
             printf("get directroy error");
             return -1;
         }
-        
-        // printf("check value of getDIr: %d\n", getDir[i].location);
-
         i++;
     }
 
@@ -115,6 +110,16 @@ int fs_isFile(char *filename)
 
 int fs_isDir(char *pathname)
 {
+    char *buffer = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
+    if (strncmp(pathname, ".", 1) == 0 || strncmp(pathname, "..", 2) == 0)
+    {
+        mergePath(currentWorkingDirectory, pathname, buffer);
+    }
+    else
+    {
+        strcpy(buffer, pathname);
+    }
+    printf("here??\n");
 
     if (pathname == NULL || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH)
     {
@@ -122,7 +127,7 @@ int fs_isDir(char *pathname)
         return -1; // invalid path
     }
 
-    Path *parsedPath = parsePath(pathname);
+    Path *parsedPath = parsePath(buffer);
     if (parsedPath->token_count == 0)
     {
 
@@ -130,34 +135,61 @@ int fs_isDir(char *pathname)
         return -1;
     }
 
-    DirectoryEntry *currentDir = getRootDirectoryEntry();
-    if (currentDir == NULL)
+    DirectoryEntry *getDir = getRootDirectoryEntry();
+    if (getDir == NULL)
     {
 
         printf("error: invalid root ");
         return -1;
     }
-
-    for (int i = 0; i < parsedPath->token_count; i++)
+    printf("here?\n");
+    int i = 0;
+    while (i < parsedPath->token_count - 1)
     {
 
-        DirectoryEntry *nextDir = getDirectory(currentDir, parsedPath->tokens[i]);
-
-        if (nextDir == NULL || nextDir->isDirect == false)
+        if (strcmp(parsedPath->tokens[i], ".") == 0)
         {
-            printf("error: not a directory");
-            ;
+            i++;
+            continue;
+        }
+        else if (strcmp(parsedPath->tokens[i], "..") == 0)
+        {
+            getDir = parentDirectory(getDir);
+        }
+        else
+        {
+            getDir = getDirectory(getDir, parsedPath->tokens[i]);
+        }
+        if (!getDir)
+        {
+
+            printf("get directroy error");
             return -1;
         }
-
-        currentDir = nextDir;
+        i++;
     }
-
+    if (getDir == NULL || getDir->isDirect == false)
+    {
+        printf("error: not a directory");
+        ;
+        return -1;
+    }
     return 0;
 }
 
 int fs_setcwd(char *pathname)
 {
+
+    char *buffer = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
+    if (strncmp(pathname, ".", 1) == 0 || strncmp(pathname, "..", 2) == 0)
+    {
+        mergePath(currentWorkingDirectory, pathname, buffer);
+    }
+    else
+    {
+        strcpy(buffer, pathname);
+    }
+
     currentWorkingDirectory = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
     if (pathname == NULL)
     {
@@ -165,7 +197,7 @@ int fs_setcwd(char *pathname)
         return -1;
     }
 
-    Path *parsedPath = parsePath(pathname);
+    Path *parsedPath = parsePath(buffer);
     if (parsedPath->token_count == 0)
     {
 
@@ -173,28 +205,42 @@ int fs_setcwd(char *pathname)
         return -1;
     }
 
-    DirectoryEntry *currentDir = getRootDirectoryEntry();
-    if (currentDir == NULL)
+    DirectoryEntry *getDir = getRootDirectoryEntry();
+    if (getDir == NULL)
     {
 
         printf("error: invalid root");
         return -1;
     }
 
-    for (int i = 0; i < parsedPath->token_count; i++)
+    int i = 0;
+    while (i < parsedPath->token_count - 1)
     {
-        DirectoryEntry *nextDir = getDirectory(currentDir, parsedPath->tokens[i]);
-        if (nextDir == NULL || nextDir->isDirect == false)
+
+        if (strcmp(parsedPath->tokens[i], ".") == 0)
+        {
+            i++;
+            continue;
+        }
+        else if (strcmp(parsedPath->tokens[i], "..") == 0)
+        {
+            getDir = parentDirectory(getDir);
+        }
+        else
+        {
+            getDir = getDirectory(getDir, parsedPath->tokens[i]);
+        }
+        if (!getDir)
         {
 
-            printf("error: not a directory");
+            printf("get directroy error");
             return -1;
         }
-        currentDir = nextDir;
+        i++;
     }
 
     strcpy(currentWorkingDirectory, pathname);
-    myCwd = currentDir;
+    myCwd = getDir;
     printf("what is my current working directory's address? %d\n", myCwd[0].location);
 
     return 0;
@@ -202,7 +248,7 @@ int fs_setcwd(char *pathname)
 
 char *fs_getcwd(char *pathname, size_t size)
 {
-    pathname = (char*) malloc(sizeof(char) * MAX_PATH_LENGTH);
+    pathname = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
     if (pathname == NULL || size == 0)
     {
 

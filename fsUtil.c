@@ -99,7 +99,7 @@ DirectoryEntry *getDirectory(DirectoryEntry *currentDirectory, char *dirGoingTo)
     for (int i = 0; i < NUM_ENTRIES; i++)
     {
         int result = strcmp(currentDirectory[i].name, dirGoingTo);
-        if (result == 0 && currentDirectory[i].isOccupied == 1)
+        if (result == 0 && currentDirectory[i].isOccupied == 1 && currentDirectory[i].isDirect == 1)
         {
             entryPosition = currentDirectory[i].location;
             dirExists = 1;
@@ -166,12 +166,11 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
     return 0;
 }
 
-char *mergePath(const char *leftPart, const char *rightPart, char *buffer)
+void mergePath(const char *leftPart, const char *rightPart, char *buffer)
 {
     strcpy(buffer, leftPart);
     strcat(buffer, rightPart);
     printf("what is the result? %s\n", buffer);
-    return buffer;
 }
 
 DirectoryEntry *parentDirectory(DirectoryEntry *currentDirectory)

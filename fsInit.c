@@ -80,11 +80,14 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     makeDirectory(testFindDir, "newnew");
 
     printf("testing find diretory function: %d\n", testFindDir[0].location);
-
+    printf("runned????\n");
+    printf("else statement?\n");
     fs_mkdir("/.../newnewnew", 3);
-    fs_setcwd("/.../newnewnew");
-    char * returnVALUE = fs_getcwd("/.../newnewnew", 7);
-    printf("what is the return value %s\n", returnVALUE);
+    fs_setcwd("/.../");
+    fs_mkdir("./hello",3);
+    printf("here???\n");
+    int x = fs_isFile("/.../newnewnew");
+    printf("value of x %d\n", x);
 
     // int x = fs_isFile("/.../newnewnew");
     // int y = fs_isDir("/.../newnewnew");
