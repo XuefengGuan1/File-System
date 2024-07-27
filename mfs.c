@@ -78,24 +78,24 @@ int fs_mkdir(const char *pathname, mode_t mode)
     return 0;
 }
 
-// int fs_isFile(char *filename)
-// {
-//
-//     if (filename == NULL || strlen(filename) == 0 || strlen(filename) > MAX_PATH_LENGTH)
-//     {
-//
-//         return 0; // invalid file name
-//     }
-//
-//     // if not a dir, then is file
-//     if (fs_isDir(filename))
-//     {
-//
-//         return 0;
-//     }
-//
-//     return 1;
-// }
+ int fs_isFile(char *filename)
+ {
+
+     if (filename == NULL || strlen(filename) == 0 || strlen(filename) > MAX_PATH_LENGTH)
+     {
+
+         return 0; // invalid file name
+     }
+
+     // if not a dir, then is file
+     if (fs_isDir(filename) == 0)
+     {
+
+         return 0;
+     }
+
+     return 1;
+ }
 
  int fs_isDir(char *pathname)
  {
@@ -110,7 +110,8 @@ int fs_mkdir(const char *pathname, mode_t mode)
      if (parsedPath->token_count == 0)
      {
 
-         return -1; // error retrieving root
+         printf("error: invalid path parsed");
+         return -1; 
      }
 
      DirectoryEntry *currentDir = getRootDirectoryEntry();
@@ -129,7 +130,7 @@ int fs_mkdir(const char *pathname, mode_t mode)
          if (nextDir == NULL || nextDir->isDirect == false)
          {
              printf("error: not a directory");;
-             return -1;
+             return 0;
          }
 
          currentDir = nextDir;

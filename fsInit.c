@@ -64,9 +64,6 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 
 
 
-
-
-
     //Below this are all for testings
 
     //Make a bunch of directories for testing
@@ -84,7 +81,34 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 
     printf("testing find diretory function: %d\n", testFindDir[0].location);
 
-    fs_mkdir("/.../newnew", 3);
+    fs_mkdir("/.../newnewnew", 3);
+
+//    char *testDir_file = "/.../newnewnew";
+//    char *passWrongTest = "test should fail";
+
+//    if(fs_isDir(testDir_file) != 1) {
+//
+//        printf("**************test failed**************");
+//    }else{
+//
+//        printf("**********TEST PASSED********");
+//    }
+//
+//    if(fs_isFile(testDir_file) != 1) {
+//
+//        printf("**************test failed**************");
+//    }else{
+//
+//        printf("**********TEST PASSED********");
+//    }
+//    if(fs_isFile(passWrongTest) == 1) {
+//
+//        printf("**************test failed**************");
+//    }else{
+//
+//        printf("**********TEST PASSED********");
+//    }
+//    
 
     // test parsePath
     // Path* testPath = parsePath("/welcome/hello/hi");

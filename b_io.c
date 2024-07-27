@@ -329,7 +329,7 @@ int b_read (b_io_fd fd, char * buf, int count)
 // Interface to Close the file	
 int b_close (b_io_fd fd)
 	{
-	int b_close(b_io_fd fd) {
+	
     if (startup == 0) b_init(); // Initialize our system
 
     // check that fd is between 0 and (MAXFCBS-1)
@@ -344,4 +344,4 @@ int b_close (b_io_fd fd)
 
     return 0;
 }
-	}
+	
