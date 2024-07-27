@@ -15,6 +15,12 @@ char *currentWorkingDirectory;
 int fs_mkdir(const char *pathname, mode_t mode)
 {
 
+    char buffer[MAX_PATH_LENGTH];
+    if(strncmp(pathname, ".", 1) == 0) {
+
+        mergePath(currentWorkingDirectory, pathname, buffer);
+    }
+
     if (!pathname || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH)
     {
         printf("invalid parameter for oathname");
@@ -29,7 +35,7 @@ int fs_mkdir(const char *pathname, mode_t mode)
         return -1;
     }
 
-    Path *parsePathname = parsePath(pathname);
+    Path *parsePathname = parsePath(buffer);
     if (!parsePathname)
     {
 
@@ -54,14 +60,25 @@ int fs_mkdir(const char *pathname, mode_t mode)
     while (i < parsePathname->token_count - 1)
     {
 
-        getDir = getDirectory(getDir, parsePathname->tokens[i]);
+        if(strcmp(parsePathname->tokens[i], ".") == 0) {
+       
+            parsePathname->tokens[i] = parsePathname->tokens[i-1];
+            getDir = getDirectory(getDir, parsePathname->tokens[i] );
+        } else if(strcmp(parsePathname->tokens[i], "..") == 0) {
+
+            getDir = parentDirectory(getDir);
+            parsePathname->tokens[i] = parsePathname->tokens[i-2];
+        } else {
+            getDir= getDirectory(getDir, parsePathname->tokens[i]);
+            
+        }
         if (!getDir)
         {
 
             printf("get directroy error");
             return -1;
         }
-
+        
         // printf("check value of getDIr: %d\n", getDir[i].location);
 
         i++;
