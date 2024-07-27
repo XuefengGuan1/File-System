@@ -166,7 +166,7 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
     return 0;
 }
 
-char *mergePath(const char *leftPart, const char *rightPart, char* buffer)
+char *mergePath(const char *leftPart, const char *rightPart, char *buffer)
 {
     strcat(buffer, rightPart);
 
@@ -174,7 +174,24 @@ char *mergePath(const char *leftPart, const char *rightPart, char* buffer)
     return buffer;
 }
 
+DirectoryEntry *parentDirectory(DirectoryEntry *currentDirectory)
+{
+    char *buffer = malloc(56 * 64);
+    int parentDirectoryLocation = currentDirectory[1].location;
+    while (1)
+    {
+        LBAread(buffer, 1, parentDirectoryLocation);
+        if (findNextBlock(parentDirectoryLocation) != ENDBLOCK)
+        {
+            break;
+        }
+    }
+
+    DirectoryEntry *parentDirectory = (DirectoryEntry *)buffer;
+
+    return parentDirectory;
+}
+
 // void deleteDirectory(DirectoryEntry *currentDirectory, char *childName)
 // {
 // }
-

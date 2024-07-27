@@ -13,7 +13,7 @@ int blocksNeededGlobal;
 int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int childIndex)
 {
     blockSizeGlobal = blockSize;
-    DirectoryEntry *dir = (DirectoryEntry*) malloc(DIRECTORY_ENTRY_NUMBER*sizeof(DirectoryEntry)); 
+    DirectoryEntry *dir = (DirectoryEntry *)malloc(DIRECTORY_ENTRY_NUMBER * sizeof(DirectoryEntry));
     int byteNeeded = 56*64;
     printf("how many bytes needed? %d\n", byteNeeded);
     int blocksNeeded = (byteNeeded + blockSize - 1) / blockSize;
