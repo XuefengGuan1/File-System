@@ -78,7 +78,7 @@ b_io_fd b_getFCB ()
 // O_RDONLY, O_WRONLY, or O_RDWR
 b_io_fd b_open (char * filename, int flags)
 	{
- b_io_fd returnFd;
+    b_io_fd returnFd;
     Path *parsed_path = parsePath(filename);
     DirectoryEntry *parentDirectory = getRootDirectoryEntry();
     
@@ -134,10 +134,8 @@ b_io_fd b_open (char * filename, int flags)
         parentDirectory[freeSlot].size = 0;
 
         // Write the updated directory to disk
-        if (LBAwrite(parentDirectory, NUM_BLOCKS, START_BLOCK) == -1) {
-            return -1; // Error writing directory to disk
-        }
-
+        updateParent(parentDirectory, parentDirectory[freeSlot].name, freeSlot, parentDirectory[freeSlot].location);
+     
         fileEntry = &parentDirectory[freeSlot];
         fileIndex = freeSlot;
     } else {
