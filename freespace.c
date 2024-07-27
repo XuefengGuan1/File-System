@@ -21,6 +21,7 @@
 #include "freespace.h"
 
 uint64_t numberOfBlocksGlobal;
+int freespaceBlocksGlobal;
 
 typedef struct Freespace
 {

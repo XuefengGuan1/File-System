@@ -26,10 +26,6 @@
 #include "freespace.h"
 #include "fsUtil.h"
 
-#define FT_REGFILE DT_REG
-#define FT_DIRECTORY DT_DIR
-#define FT_LINK DT_LNK
-
 int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 {
     char readBuffer[blockSize];
@@ -65,23 +61,34 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     // init root directory
     int rootDirStartingBlock = createDir(freespaceSize, blockSize, NULL, -1);
 
-    DirectoryEntry *root = getRootDirectoryEntry();
-    // printf("what is root's name %d\n", root[0].location);
 
+
+
+
+
+
+    //Below this are all for testings
+
+    //Make a bunch of directories for testing
+    DirectoryEntry *root = getRootDirectoryEntry();
     makeDirectory(root, "...");
-    // third make directory starts
-    // printf("3RD make directory starts from here--------------------, location is %d\n", root[0].location);
     makeDirectory(root, "....");
     makeDirectory(root, ".....");
     makeDirectory(root, "......");
     makeDirectory(root, ".......");
     makeDirectory(root, "........");
     makeDirectory(root, ".........");
+    DirectoryEntry *testFindDir = getDirectory(root, "...");
+    makeDirectory(testFindDir, "new");
+    makeDirectory(testFindDir, "newnew");
 
-    int testResult = fs_mkdir("/.../new", 5);
+    printf("testing find diretory function: %d\n", testFindDir[0].location);
 
-    // DirectoryEntry *testFindDir = getDirectory(root, "....");
-    // printf("testing find diretory function: %d\n", testFindDir[0].location);
+    fs_mkdir("/.../newnew", 3);
+
+    // test parsePath
+    // Path* testPath = parsePath("/welcome/hello/hi");
+    // printf("test path function %s\n", testPath->tokens[0]);
     return 0;
 }
 void exitFileSystem()
