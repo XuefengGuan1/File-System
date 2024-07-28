@@ -107,8 +107,10 @@ int findNextBlock(int startBlock)
 
 void loadFAT()
 {
-    char *buffer = malloc(39 * 512);
     fs = (Freespace *)malloc(sizeof(Freespace));
-    LBAwrite(buffer, 39, 1);
-    fs = (Freespace *)buffer;
+    fs->fat = (int8_t *)malloc(sizeof(int8_t) * 19531);
+
+    // Read the FAT from disk
+    int fatBlocks = (sizeof(int8_t) * 19531 + 521 - 1) / 521;
+    LBAread(fs->fat, fatBlocks, 1);
 }
