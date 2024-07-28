@@ -129,6 +129,8 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
 {
     int freeSlot = -1;
 
+    printf("1\n");
+
     for (int i = 2; i < NUM_ENTRIES; i++) // Start from 2 to skip "." and ".."
     {
         if (strcmp(currentDirectory[i].name, childName) == 0 && currentDirectory[i].isOccupied == 1)
@@ -137,6 +139,8 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
             return -1;
         }
     }
+
+    printf("2\n");
 
     for (int i = 2; i < NUM_ENTRIES; i++) // Start from 2 to skip "." and ".."
     {
@@ -147,13 +151,18 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
         }
     }
 
+    printf("3\n");
+
     if (freeSlot == -1)
     {
         printf("No free slots in directory\n");
         return -1;
     }
 
+    printf("4\n");
+
     int freeBlock = findFreeBlock(41);
+    printf("Free block %d\n", freeBlock);
     printf("what is the value? %d\n", freeBlock);
 
     if (freeBlock == -1)
@@ -161,6 +170,7 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
         printf("No free blocks available\n");
         return -1;
     }
+    printf("5\n");
     updateParent(currentDirectory, childName, freeSlot, freeBlock);
     createDir(freeBlock, 512, currentDirectory, freeSlot);
 

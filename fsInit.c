@@ -33,12 +33,13 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     LBAread(readBuffer, 1, 0);
     char localVCB[sizeof(VolumeControlBlock)];
     memcpy(localVCB, readBuffer, sizeof(VolumeControlBlock));
-    VolumeControlBlock *vcb = (VolumeControlBlock *)localVCB;
+    VolumeControlBlock *vcbTest = (VolumeControlBlock *)localVCB;
 
     // If existed, doesn't do anything
-    if (vcb->volumeSignature == VOLUME_SIG)
+    if (vcbTest->volumeSignature == VOLUME_SIG)
     {
         printf("VCB already existed\n");
+        loadFAT();
     }
     else
     // If not exist, initialize the VCB

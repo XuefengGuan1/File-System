@@ -19,9 +19,7 @@
 #include <stdint.h>
 #include "fsLow.h"
 #include "freespace.h"
-
-uint64_t numberOfBlocksGlobal;
-int freespaceBlocksGlobal;
+#include "vcb.h"
 
 typedef struct Freespace
 {
@@ -31,13 +29,10 @@ Freespace *fs;
 
 int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize)
 {
-    numberOfBlocksGlobal = numberOfBlocks;
-
     fs = (Freespace *)malloc(sizeof(Freespace));
     fs->fat = (int8_t *)malloc(sizeof(int8_t) * numberOfBlocks);
 
     int freespaceBlocks = (sizeof(int8_t) * numberOfBlocks + blockSize - 1) / blockSize;
-    freespaceBlocksGlobal = freespaceBlocks;
     for (int i = 0; i < numberOfBlocks; i++)
     {
         fs->fat[i] = FREEBLOCK;
@@ -73,7 +68,7 @@ int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
         prevNode = blockNode;
     }
 
-    if (LBAwrite(fs->fat, freespaceBlocksGlobal, 1) == -1)
+    if (LBAwrite(fs->fat, 39, 1) == -1)
     {
         printf("Error writing FAT to disk\n");
         return -1;
@@ -84,15 +79,16 @@ int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
 
 int findFreeBlock(int freespaceSize)
 {
-    printf("num of blocks global %ld", numberOfBlocksGlobal);
-    for (int i = freespaceSize; i < numberOfBlocksGlobal; i++)
+    printf("here\n");
+    printf("%d\n", freespaceSize);
+    for (int i = freespaceSize; i < 19531; i++)
     {
-        printf("what is the value? %d\n", fs->fat[i]);
 
         if (fs->fat[i] == FREEBLOCK)
         {
             return i;
         }
+        printf("what is the value? %d\n", fs->fat[i]);
     }
     // If no free space available
     return -1;
@@ -100,9 +96,19 @@ int findFreeBlock(int freespaceSize)
 
 int findNextBlock(int startBlock)
 {
+
     if (fs->fat[startBlock] == ENDBLOCK)
     {
         return ENDBLOCK;
     }
+    printf("what is the NEXT value? %d\n", fs->fat[startBlock]);
     return fs->fat[startBlock];
+}
+
+void loadFAT()
+{
+    char *buffer = malloc(39 * 512);
+    fs = (Freespace *)malloc(sizeof(Freespace));
+    LBAwrite(buffer, 39, 1);
+    fs = (Freespace *)buffer;
 }
