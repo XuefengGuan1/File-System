@@ -151,7 +151,7 @@ b_io_fd b_open (char * filename, int flags)
             printf("In truncate fuction b_open\n");
             fileEntry->size = 0;
             // Deallocate current blocks and allocate new blocks if needed
-            deallocateBlocks(fileEntry->location);
+            // deallocateBlocks(fileEntry->location);
               int startblock = findFreeBlock(1);
             fileEntry->location = allocateBlocks(1, startblock);
             if (fileEntry->location == -1) {
