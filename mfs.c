@@ -263,13 +263,19 @@ char *fs_getcwd(char *pathname, size_t size)
     }
 
     // construct path by traversing up the dir tree
-    if(currentWorkingDirectory == NULL){
+    if (currentWorkingDirectory == NULL)
+    {
         return "/";
     }
     strncpy(pathname, currentWorkingDirectory, size);
+<<<<<<< HEAD
     pathname[size - 1] = '\0';
     //free(pathname);
     
+=======
+    free(pathname);
+
+>>>>>>> 6a8b0c4 (last min changes)
     return pathname;
 }
 
@@ -301,43 +307,99 @@ fdDir *fs_opendir(const char *pathname)
     return fd;
 }
 
-// struct fs_diriteminfo *fs_readdir(fdDir *fd)
-// {
-//     if (fd == NULL || fd->directory == NULL || fd->dirEntryPosition >= fd->d_reclen)
-//     {
-//         return NULL;
-//     }
+struct fs_diriteminfo *fs_readdir(fdDir *dirp) {
+    if (dirp == NULL || dirp->directory == NULL) {
+        return NULL;
+    }
 
-//     DirectoryEntry* entry = &fd->directory[fd->dirEntryPosition];
-//     static struct fs_diriteminfo diriteminfo;
+    while (dirp->dirEntryPosition < DIRECTORY_ENTRY_NUMBER) {
+        DirectoryEntry *entry = &dirp->directory[dirp->dirEntryPosition];
 
-//     diriteminfo.d_reclen = sizeof(struct fs_diriteminfo);
-//     diriteminfo.fileType = entry->isDirect ? FT_DIRECTORY : FT_REGFILE;
-//     strncpy(diriteminfo.d_name, entry->name, 255);
-//     fd->dirEntryPosition++;
+        if (entry->isOccupied) {
+            struct fs_diriteminfo *dirInfo = (struct fs_diriteminfo *)malloc(sizeof(struct fs_diriteminfo));
+            if (dirInfo == NULL) {
+                return NULL;
+            }
 
-//     return &diriteminfo;
-// }
+            strcpy(dirInfo->d_name, entry->name);
+            dirInfo->d_reclen = dirp->d_reclen;
+            dirInfo->fileType = entry->isDirect;
 
-// int fs_rmdir(const char *pathname){
-//     Path parsed = parsePath(pathname);
-//     if (cwd == parsed.tokens[parsed.tokens[parsed.token_count-1]]);
-//     //if getDir true;
-//     //call deleteDE
+            dirp->dirEntryPosition++;
+            return dirInfo;
+        }
 
-//     if (parsed.is_absolute){
+        dirp->dirEntryPosition++;
+    }
 
-//     }
+    return NULL;
+}
 
-// }
 
-// int fs_closedir(fdDir *fd)
-// {
-//     if (fd == NULL)
-//     {
-//         return -1;
-//     }
+int fs_closedir(fdDir *dirp) {
+    if (dirp == NULL) {
+        return -1;
+    }
 
-//     free(fd);
-//     return 0;
-// }
+    free(dirp);
+    return 0;
+}
+
+
+int fs_stat(const char *path, struct fs_stat *buf)
+{
+    char *buffer = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
+    if (strncmp(path, ".", 1) == 0 || strncmp(path, "..", 2) == 0)
+    {
+        mergePath(currentWorkingDirectory, path, buffer);
+    }
+    else
+    {
+        strcpy(buffer, path);
+    }
+    Path *parsedPath = parsePath(buffer);
+    if (parsedPath->token_count == 0)
+    {
+
+        printf("error: invlid pare path");
+        return -1;
+    }
+    DirectoryEntry *getDir = getRootDirectoryEntry();
+    if (getDir == NULL)
+    {
+
+        printf("error: invalid root");
+        return -1;
+    }
+
+    int i = 0;
+    while (i < parsedPath->token_count)
+    {
+
+        if (strcmp(parsedPath->tokens[i], ".") == 0)
+        {
+            i++;
+            continue;
+        }
+        else if (strcmp(parsedPath->tokens[i], "..") == 0)
+        {
+            getDir = parentDirectory(getDir);
+        }
+        else
+        {
+            getDir = getDirectory(getDir, parsedPath->tokens[i]);
+        }
+        if (!getDir)
+        {
+
+            printf("get directroy error");
+            return -1;
+        }
+        i++;
+    }
+    buf->st_accesstime = getDir[0].accessTime;
+    buf->st_createtime = getDir[0].creationTime;
+    buf->st_modtime = getDir[0].modificationTime;
+    buf->st_blocks = DIRECTORY_ENTRY_NUMBER;
+    buf->st_size = getDir[0].size;
+}

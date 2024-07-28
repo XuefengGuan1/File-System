@@ -66,10 +66,15 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     // Below this are all for testings
 
     // Make a bunch of directories for testing
-    //fs_mkdir("/d1",1);
-    //fs_setcwd("/d1");
-    //fs_mkdir("./d2",1);
-    // fs_mkdir("/d3", 1);
+    struct fs_stat *stat;
+
+    
+    // fs_mkdir("/d1", 1);
+    // fs_setcwd("/d1");
+    // fs_mkdir("./d2", 1);
+    // fs_mkdir("/d1/d2/d3", 1);
+    // fs_stat("/d1/d2/d3", stat);
+
     // fs_mkdir("/d3", 1);
     //  root = getDirectory(root,"...");
     //  makeDirectory(root, "nice");

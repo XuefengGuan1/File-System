@@ -65,6 +65,8 @@ typedef struct
 
 // Key directory functions
 int fs_mkdir(const char *pathname, mode_t mode);
+
+//rmdir not implemented
 int fs_rmdir(const char *pathname);
 
 // Directory iteration functions
@@ -77,6 +79,8 @@ char *fs_getcwd(char *pathname, size_t size);
 int fs_setcwd(char *pathname); // linux chdir
 int fs_isFile(char *filename); // return 1 if file, 0 otherwise
 int fs_isDir(char *pathname);  // return 1 if directory, 0 otherwise
+
+//delete not implmented
 int fs_delete(char *filename); // removes a file
 
 // This is the structure that is filled in from a call to fs_stat
@@ -93,7 +97,5 @@ struct fs_stat
 };
 
 int fs_stat(const char *path, struct fs_stat *buf);
-
-// DirectoryEntry *myCwd;
 
 #endif

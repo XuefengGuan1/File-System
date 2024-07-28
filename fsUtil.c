@@ -97,8 +97,6 @@ DirectoryEntry *getDirectory(DirectoryEntry *currentDirectory, char *dirGoingTo)
             dirExists = 1;
             break;
         }
-        printf("Comparing '%s' with '%s', dir value is %d, result is %d\n",
-               currentDirectory[i].name, dirGoingTo, dirExists, result);
     }
 
     if (dirExists == 0)
@@ -121,7 +119,6 @@ DirectoryEntry *getDirectory(DirectoryEntry *currentDirectory, char *dirGoingTo)
         return NULL;
     }
 
-    printf("dir location is %d\n", dir[0].location);
     return dir;
 }
 
@@ -129,7 +126,6 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
 {
     int freeSlot = -1;
 
-    printf("1\n");
 
     for (int i = 2; i < NUM_ENTRIES; i++) // Start from 2 to skip "." and ".."
     {
@@ -140,7 +136,6 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
         }
     }
 
-    printf("2\n");
 
     for (int i = 2; i < NUM_ENTRIES; i++) // Start from 2 to skip "." and ".."
     {
@@ -151,7 +146,6 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
         }
     }
 
-    printf("3\n");
 
     if (freeSlot == -1)
     {
@@ -159,7 +153,6 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
         return -1;
     }
 
-    printf("4\n");
 
     int freeBlock = findFreeBlock(41);
     printf("Free block %d\n", freeBlock);
@@ -170,7 +163,6 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
         printf("No free blocks available\n");
         return -1;
     }
-    printf("5\n");
     updateParent(currentDirectory, childName, freeSlot, freeBlock, 1);
     createDir(freeBlock, 512, currentDirectory, freeSlot);
 

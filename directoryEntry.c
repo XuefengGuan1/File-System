@@ -11,7 +11,7 @@
 int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int childIndex)
 {
     DirectoryEntry *dir = (DirectoryEntry *)malloc(DIRECTORY_ENTRY_NUMBER * sizeof(DirectoryEntry));
-    int byteNeeded = 56*64;
+    int byteNeeded = DIRECTORY_ENTRY_NUMBER*sizeof(DirectoryEntry);
     int blocksNeeded = (byteNeeded + blockSize - 1) / blockSize;
 
     // Initialize all entries
@@ -91,7 +91,6 @@ void updateParent(DirectoryEntry *directory, char *childName, int childIndex, in
     directory[childIndex].size = 64;
     directory[childIndex].location = startBlock;
 
-    // int returnValueList[7];
     LBAwrite(directory, 1, directory[0].location);
     int returnValue = findNextBlock(directory[0].location);
     int currentMemCpyValue = 0;

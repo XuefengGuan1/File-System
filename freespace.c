@@ -38,7 +38,7 @@ int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize)
     {
         if (i < 40)
         {
-            fs->fat[i] = 2;
+            fs->fat[i] = RESERVED;
         }
         else
         {
