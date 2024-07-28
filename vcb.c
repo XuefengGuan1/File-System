@@ -23,14 +23,10 @@
 
 int initializeVCB(uint64_t volumeSize, uint64_t blockSize)
 {
-    VolumeControlBlock *vcb = (VolumeControlBlock*) malloc(sizeof(VolumeControlBlock));
+    VolumeControlBlock *vcb = (VolumeControlBlock *)malloc(sizeof(VolumeControlBlock));
 
-    printf("here???\n");
-    // printf("initilzation function runned?\n");
     vcb->blockSize = blockSize;
-    printf("here???\n");
     vcb->volumeSignature = VOLUME_SIG; // unique signature
-    printf("here???\n");
     vcb->volumeSize = volumeSize;
     vcb->fatTableLocation = 1; // FAT is block 1, vcb is 0, root is 2
     vcb->rootDirectoryLocation = 41;

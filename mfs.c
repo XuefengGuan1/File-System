@@ -81,8 +81,7 @@ int fs_mkdir(const char *pathname, mode_t mode)
 
     if (makeDirectory(getDir, lastEleName) != 0)
     {
-
-        printf("make dir failed");
+        printf("make dir failed\n");
         return -1;
     }
 
@@ -214,7 +213,7 @@ int fs_setcwd(char *pathname)
     }
 
     int i = 0;
-    while (i < parsedPath->token_count - 1)
+    while (i < parsedPath->token_count)
     {
 
         if (strcmp(parsedPath->tokens[i], ".") == 0)
@@ -241,7 +240,6 @@ int fs_setcwd(char *pathname)
 
     strcpy(currentWorkingDirectory, pathname);
     myCwd = getDir;
-    printf("what is my current working directory's address? %d\n", myCwd[0].location);
 
     return 0;
 }
@@ -251,22 +249,17 @@ char *fs_getcwd(char *pathname, size_t size)
     pathname = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
     if (pathname == NULL || size == 0)
     {
-
         printf("error: pathname or size invalid");
         return NULL;
     }
-    printf("runne here\n");
-    // if (myCwd == NULL)
-    // {
 
-    //     printf("error: myCwd null");
-    //     return NULL;
-    // }
-    printf("happened here?>\n");
     // construct path by traversing up the dir tree
+    if(currentWorkingDirectory == NULL){
+        return "/";
+    }
     strncpy(pathname, currentWorkingDirectory, size);
-    printf("what is the path %s\n", pathname);
     free(pathname);
+    
     return pathname;
 }
 

@@ -74,12 +74,6 @@ DirectoryEntry *getRootDirectoryEntry()
     }
 
     DirectoryEntry *rootDir = (DirectoryEntry *)buffer;
-    for (int i = 0; i < DIRECTORY_ENTRY_NUMBER; i++)
-    {
-        printf("Entry %d: isDirect = %d, name = %s\n", i, rootDir[i].isDirect, rootDir[i].name);
-    }
-
-    printf("try Root %d\n", rootDir[0].isDirect);
     return rootDir;
 }
 
@@ -90,8 +84,6 @@ DirectoryEntry *getDirectory(DirectoryEntry *currentDirectory, char *dirGoingTo)
         printf("Invalid input parameters\n");
         return NULL;
     }
-
-    printf("what is the parent's directory in the getDIrectory function? %d\n", currentDirectory[0].location);
 
     int dirExists = 0;
     int entryPosition = -1;
@@ -109,13 +101,11 @@ DirectoryEntry *getDirectory(DirectoryEntry *currentDirectory, char *dirGoingTo)
                currentDirectory[i].name, dirGoingTo, dirExists, result);
     }
 
-    printf("Directory search complete\n");
     if (dirExists == 0)
     {
         printf("Directory not found\n");
         return NULL;
     }
-    printf("Directory found at position %d\n", entryPosition);
 
     DirectoryEntry *dir = malloc(NUM_BLOCKS * BLOCK_SIZE);
     if (dir == NULL)
@@ -137,8 +127,17 @@ DirectoryEntry *getDirectory(DirectoryEntry *currentDirectory, char *dirGoingTo)
 
 int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
 {
-    printf("what about in create directory?%d\n", currentDirectory[0].location);
     int freeSlot = -1;
+
+    for (int i = 2; i < NUM_ENTRIES; i++) // Start from 2 to skip "." and ".."
+    {
+        if (strcmp(currentDirectory[i].name, childName) == 0 && currentDirectory[i].isOccupied == 1)
+        {
+            printf("This directory already existed\n");
+            return -1;
+        }
+    }
+
     for (int i = 2; i < NUM_ENTRIES; i++) // Start from 2 to skip "." and ".."
     {
         if (currentDirectory[i].isOccupied == 0)
@@ -155,6 +154,8 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
     }
 
     int freeBlock = findFreeBlock(41);
+    printf("what is the value? %d\n", freeBlock);
+
     if (freeBlock == -1)
     {
         printf("No free blocks available\n");
@@ -169,8 +170,8 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
 void mergePath(const char *leftPart, const char *rightPart, char *buffer)
 {
     strcpy(buffer, leftPart);
+    strcat(buffer, "/");
     strcat(buffer, rightPart);
-    printf("what is the result? %s\n", buffer);
 }
 
 DirectoryEntry *parentDirectory(DirectoryEntry *currentDirectory)

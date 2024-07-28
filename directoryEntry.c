@@ -7,18 +7,12 @@
 #include <stdlib.h>
 #include <time.h>
 
-int blockSizeGlobal;
-int blocksNeededGlobal;
 
 int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int childIndex)
 {
-    blockSizeGlobal = blockSize;
     DirectoryEntry *dir = (DirectoryEntry *)malloc(DIRECTORY_ENTRY_NUMBER * sizeof(DirectoryEntry));
     int byteNeeded = 56*64;
-    printf("how many bytes needed? %d\n", byteNeeded);
     int blocksNeeded = (byteNeeded + blockSize - 1) / blockSize;
-    blocksNeededGlobal = blocksNeeded;
-    printf("%d blocks needed\n", blocksNeeded);
 
     // Initialize all entries
     for (int i = 2; i < DIRECTORY_ENTRY_NUMBER; i++)
@@ -58,8 +52,6 @@ int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int c
     }
     else
     {
-        printf("dir address: %p, parent address: %p\n", (void *)dir, (void *)parent);
-        printf("sizeof(DirectoryEntry): %zu\n", sizeof(DirectoryEntry));
         dir[1].creationTime = parent[0].creationTime;
         strncpy(dir[1].name, "..", MAX_FILENAME_SIZE);
         dir[1].location = parent[0].location;
@@ -75,10 +67,6 @@ int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int c
     int head = allocateBlocks(blocksNeeded, startingBlock);
 
     // Write the directory entries to the allocated blocks
-    int entriesPerBlock = blockSize / sizeof(DirectoryEntry);
-    int entryIndex = 0;
-
-    printf("what is head???? %d\n", head);
     int currentMemCpyValue = 0;
     LBAwrite(dir, 1, head);
     int nextValue = findNextBlock(head);
@@ -94,7 +82,6 @@ int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int c
 
 void updateParent(DirectoryEntry *directory, char *childName, int childIndex, int startBlock)
 {
-    printf("*****************blocks is %d\n", directory[0].location);
     strncpy(directory[childIndex].name, childName, MAX_FILENAME_SIZE);
     directory[childIndex].isDirect = 1;
     directory[childIndex].isOccupied = 1;
@@ -114,6 +101,5 @@ void updateParent(DirectoryEntry *directory, char *childName, int childIndex, in
         LBAwrite(directory + currentMemCpyValue, 1, returnValue);
         // returnValueList[index] = returnValue;
         returnValue = findNextBlock(returnValue);
-        printf("return value %d\n", returnValue);
     }
 }
