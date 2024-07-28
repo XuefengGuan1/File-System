@@ -240,16 +240,10 @@ int fs_setcwd(char *pathname)
         i++;
     }
 
-<<<<<<< HEAD
     //strcpy(currentWorkingDirectory, pathname);
 //    free(currentWorkingDirectory);
     currentWorkingDirectory = malloc(strlen(buffer) +1);
     strcpy(currentWorkingDirectory, buffer);
-=======
-    // strcpy(currentWorkingDirectory, pathname);
-    free(currentWorkingDirectory);
-    currentWorkingDirectory = strdup(buffer);
->>>>>>> 7285746 (implemented fs_open,read and cmd_ls)
     myCwd = getDir;
 
     return 0;
@@ -276,16 +270,9 @@ char *fs_getcwd(char *pathname, size_t size)
         return "/";
     }
     strncpy(pathname, currentWorkingDirectory, size);
-<<<<<<< HEAD
-
-    pathname[size - 1] = '\0';
-    //free(pathname);
-//    free(pathname);
-=======
     pathname[size - 1] = '\0';
     // free(pathname);
 
->>>>>>> 7285746 (implemented fs_open,read and cmd_ls)
     return pathname;
 }
 
@@ -364,43 +351,35 @@ struct fs_diriteminfo *fs_readdir(fdDir *dirp)
         return NULL;
     }
 
-    // Check if we've reached the end of the directory entries
     if (dirp->dirEntryPosition >= DIRECTORY_ENTRY_NUMBER)
     {
         return NULL;
     }
 
-    // Find the next valid entry
     while (dirp->dirEntryPosition < DIRECTORY_ENTRY_NUMBER)
     {
         DirectoryEntry *currentEntry = &(dirp->directory[dirp->dirEntryPosition]);
-
-        // Move to the next entry for the next call
         dirp->dirEntryPosition++;
 
-        // Skip empty or unused entries
         if (!currentEntry->isOccupied)
         {
             continue;
         }
 
-        // Fill in the fs_diriteminfo structure
         struct fs_diriteminfo *di = malloc(sizeof(struct fs_diriteminfo));
         if (di == NULL)
         {
-            // Memory allocation failed
             return NULL;
         }
 
         di->d_reclen = sizeof(struct fs_diriteminfo);
-        di->fileType = currentEntry->isDirect ? 1 : 0; // 1 for directory, 0 for file
+        di->fileType = currentEntry->isDirect ? 1 : 0; 
         strncpy(di->d_name, currentEntry->name, 255);
-        di->d_name[255] = '\0'; // Ensure null-termination
+        di->d_name[255] = '\0'; 
 
         return di;
     }
 
-    // No more entries
     return NULL;
 }
 
