@@ -179,7 +179,7 @@ int fs_isDir(char *pathname)
 int fs_setcwd(char *pathname)
 {
 
-    //char *buffer = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
+    // char *buffer = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
     char buffer[MAX_PATH_LENGTH];
     if (strncmp(pathname, ".", 1) == 0 || strncmp(pathname, "..", 2) == 0)
     {
@@ -187,11 +187,11 @@ int fs_setcwd(char *pathname)
     }
     else
     {
-        strncpy(buffer, pathname, MAX_PATH_LENGTH -1);
-        buffer[MAX_PATH_LENGTH -1] = '\0';
+        strncpy(buffer, pathname, MAX_PATH_LENGTH - 1);
+        buffer[MAX_PATH_LENGTH - 1] = '\0';
     }
 
-    //currentWorkingDirectory = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
+    // currentWorkingDirectory = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
     if (pathname == NULL)
     {
 
@@ -240,10 +240,16 @@ int fs_setcwd(char *pathname)
         i++;
     }
 
+<<<<<<< HEAD
     //strcpy(currentWorkingDirectory, pathname);
 //    free(currentWorkingDirectory);
     currentWorkingDirectory = malloc(strlen(buffer) +1);
     strcpy(currentWorkingDirectory, buffer);
+=======
+    // strcpy(currentWorkingDirectory, pathname);
+    free(currentWorkingDirectory);
+    currentWorkingDirectory = strdup(buffer);
+>>>>>>> 7285746 (implemented fs_open,read and cmd_ls)
     myCwd = getDir;
 
     return 0;
@@ -251,16 +257,17 @@ int fs_setcwd(char *pathname)
 
 char *fs_getcwd(char *pathname, size_t size)
 {
-    //pathname = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
+    // pathname = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
     if (pathname == NULL || size == 0)
     {
         printf("error: pathname or size invalid");
         return NULL;
     }
-    if(currentWorkingDirectory == NULL) {
+    if (currentWorkingDirectory == NULL)
+    {
 
-        strncpy(pathname, "/", size-1);
-        pathname[size-1] = '\0';
+        strncpy(pathname, "/", size - 1);
+        pathname[size - 1] = '\0';
     }
 
     // construct path by traversing up the dir tree
@@ -269,79 +276,144 @@ char *fs_getcwd(char *pathname, size_t size)
         return "/";
     }
     strncpy(pathname, currentWorkingDirectory, size);
+<<<<<<< HEAD
 
     pathname[size - 1] = '\0';
     //free(pathname);
 //    free(pathname);
+=======
+    pathname[size - 1] = '\0';
+    // free(pathname);
+
+>>>>>>> 7285746 (implemented fs_open,read and cmd_ls)
     return pathname;
 }
 
 fdDir *fs_opendir(const char *pathname)
 {
+    fdDir *fd = (fdDir*)malloc(sizeof(fdDir));
 
-    int count;
+    char *buffer = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
+    if (strncmp(pathname, ".", 1) == 0 || strncmp(pathname, "..", 2) == 0)
+    {
+        mergePath(currentWorkingDirectory, pathname, buffer);
+    }
+    else
+    {
+        strcpy(buffer, pathname);
+    }
 
-    Path *pathcopy = parsePath(pathname);
+    if (!pathname || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH)
+    {
+        printf("invalid parameter for oathname\n");
+        return NULL;
+    }
+    Path *parsedPath = parsePath(buffer);
+    if (parsedPath->token_count == 0)
+    {
+        DirectoryEntry *getDir = getRootDirectoryEntry();
+        fd->d_reclen = getDir[0].size;
+        fd->directory = getDir;
+        fd->dirEntryPosition = 0;
+        return fd;
+    }
 
-    DirectoryEntry *dir = getRootDirectoryEntry();
+    DirectoryEntry *getDir = getRootDirectoryEntry();
+    if (getDir == NULL)
+    {
 
+        printf("error: invalid root \n");
+        return NULL;
+    }
     int i = 0;
-    while (pathcopy->tokens[i] == NULL)
+    while (i < parsedPath->token_count)
     {
-        DirectoryEntry *dir = getDirectory(dir, pathcopy->tokens[i]); // current loaded directory
+
+        if (strcmp(parsedPath->tokens[i], ".") == 0)
+        {
+            i++;
+            continue;
+        }
+        else if (strcmp(parsedPath->tokens[i], "..") == 0)
+        {
+            getDir = parentDirectory(getDir);
+        }
+        else
+        {
+            getDir = getDirectory(getDir, parsedPath->tokens[i]);
+        }
+        if (!getDir)
+        {
+
+            printf("get directroy error\n");
+            return NULL;
+        }
+        i++;
     }
 
-    fdDir *fd = (fdDir *)malloc(sizeof(fdDir));
-    if (fd == NULL)
-    {
-        return NULL; // Memory allocation failed
-    }
-
-    fd->d_reclen = sizeof(fdDir);
     fd->dirEntryPosition = 0;
-    fd->directory = dir;
+    fd->directory = getDir;
+    fd->d_reclen = getDir[0].size;
 
     return fd;
 }
-
-struct fs_diriteminfo *fs_readdir(fdDir *dirp) {
-    if (dirp == NULL || dirp->directory == NULL) {
+struct fs_diriteminfo *fs_readdir(fdDir *dirp)
+{
+    if (dirp == NULL || dirp->directory == NULL)
+    {
         return NULL;
     }
 
-    while (dirp->dirEntryPosition < DIRECTORY_ENTRY_NUMBER) {
-        DirectoryEntry *entry = &dirp->directory[dirp->dirEntryPosition];
-
-        if (entry->isOccupied) {
-            struct fs_diriteminfo *dirInfo = (struct fs_diriteminfo *)malloc(sizeof(struct fs_diriteminfo));
-            if (dirInfo == NULL) {
-                return NULL;
-            }
-
-            strcpy(dirInfo->d_name, entry->name);
-            dirInfo->d_reclen = dirp->d_reclen;
-            dirInfo->fileType = entry->isDirect;
-
-            dirp->dirEntryPosition++;
-            return dirInfo;
-        }
-
-        dirp->dirEntryPosition++;
+    // Check if we've reached the end of the directory entries
+    if (dirp->dirEntryPosition >= DIRECTORY_ENTRY_NUMBER)
+    {
+        return NULL;
     }
 
+    // Find the next valid entry
+    while (dirp->dirEntryPosition < DIRECTORY_ENTRY_NUMBER)
+    {
+        DirectoryEntry *currentEntry = &(dirp->directory[dirp->dirEntryPosition]);
+
+        // Move to the next entry for the next call
+        dirp->dirEntryPosition++;
+
+        // Skip empty or unused entries
+        if (!currentEntry->isOccupied)
+        {
+            continue;
+        }
+
+        // Fill in the fs_diriteminfo structure
+        struct fs_diriteminfo *di = malloc(sizeof(struct fs_diriteminfo));
+        if (di == NULL)
+        {
+            // Memory allocation failed
+            return NULL;
+        }
+
+        di->d_reclen = sizeof(struct fs_diriteminfo);
+        di->fileType = currentEntry->isDirect ? 1 : 0; // 1 for directory, 0 for file
+        strncpy(di->d_name, currentEntry->name, 255);
+        di->d_name[255] = '\0'; // Ensure null-termination
+
+        return di;
+    }
+
+    // No more entries
     return NULL;
 }
 
-
-int fs_closedir(fdDir *dirp) {
-    if (dirp == NULL) {
+int fs_closedir(fdDir *dirp)
+{
+    if (dirp == NULL)
+    {
         return -1;
     }
 
     free(dirp);
     return 0;
 }
-
 
 int fs_stat(const char *path, struct fs_stat *buf)
 {
