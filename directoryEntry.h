@@ -39,7 +39,7 @@ typedef struct DirectoryEntry
 int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int childIndex);
 
 // Don't use the updateParent function.
-void updateParent(DirectoryEntry *directory, char *childName, int childIndex, int startBlock);
+void updateParent(DirectoryEntry *directory, char *childName, int childIndex, int startBlock, int isDir);
 int writeDirectory(int blockSize, DirectoryEntry *dir);
 
 #endif

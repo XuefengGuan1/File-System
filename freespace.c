@@ -35,9 +35,14 @@ int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize)
     int freespaceBlocks = (sizeof(int8_t) * numberOfBlocks + blockSize - 1) / blockSize;
     for (int i = 0; i < numberOfBlocks; i++)
     {
+        if(i<40){
+            fs->fat[i]=2;
+        }else{
         fs->fat[i] = FREEBLOCK;
+        }
     }
     LBAwrite(fs->fat, numberOfBlocks, 1);
+
     return freespaceBlocks + 1;
 }
 int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)

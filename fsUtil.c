@@ -171,7 +171,7 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
         return -1;
     }
     printf("5\n");
-    updateParent(currentDirectory, childName, freeSlot, freeBlock);
+    updateParent(currentDirectory, childName, freeSlot, freeBlock, 1);
     createDir(freeBlock, 512, currentDirectory, freeSlot);
 
     return 0;

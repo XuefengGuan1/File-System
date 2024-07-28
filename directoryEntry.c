@@ -80,10 +80,10 @@ int8_t createDir(int startingBlock, int blockSize, DirectoryEntry *parent, int c
     return head;
 }
 
-void updateParent(DirectoryEntry *directory, char *childName, int childIndex, int startBlock)
+void updateParent(DirectoryEntry *directory, char *childName, int childIndex, int startBlock, int isDir)
 {
     strncpy(directory[childIndex].name, childName, MAX_FILENAME_SIZE);
-    directory[childIndex].isDirect = 1;
+    directory[childIndex].isDirect = isDir;
     directory[childIndex].isOccupied = 1;
     time(&directory[childIndex].creationTime);
     directory[childIndex].modificationTime = directory[1].creationTime;

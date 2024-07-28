@@ -136,7 +136,7 @@ b_io_fd b_open (char * filename, int flags)
 
         // Write the updated directory to disk
         printf("Calling updatParent \n");
-        updateParent(parentDirectory, parentDirectory[freeSlot].name, freeSlot, parentDirectory[freeSlot].location);
+        updateParent(parentDirectory, parentDirectory[freeSlot].name, freeSlot, parentDirectory[freeSlot].location, 0);
         // updating parent
         // if (LBAwrite(parentDirectory, 1, parentDirectory[0].location) == -1) {
         //         return -1; // Error writing directory to disk
@@ -158,7 +158,7 @@ b_io_fd b_open (char * filename, int flags)
                 return -1; // Failed to allocate blocks
             }
             // Write the updated directory entry
-            updateParent(parentDirectory, fileEntry->name, fileIndex, fileEntry->location);
+            updateParent(parentDirectory, fileEntry->name, fileIndex, fileEntry->location, 0);
         }
     }// Get our own file descriptor
    	
