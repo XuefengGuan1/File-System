@@ -30,21 +30,37 @@ Freespace *fs;
 int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize)
 {
     fs = (Freespace *)malloc(sizeof(Freespace));
-    fs->fat = (int8_t *)malloc(sizeof(int8_t) * numberOfBlocks);
-
     int freespaceBlocks = (sizeof(int8_t) * numberOfBlocks + blockSize - 1) / blockSize;
+
+    fs->fat = (int8_t *)malloc(sizeof(int8_t) * freespaceBlocks * blockSize);
+
     for (int i = 0; i < numberOfBlocks; i++)
     {
-        if(i<40){
-            fs->fat[i]=2;
-        }else{
-        fs->fat[i] = FREEBLOCK;
+        if (i < 40)
+        {
+            fs->fat[i] = 2;
+        }
+        else
+        {
+            fs->fat[i] = FREEBLOCK;
         }
     }
-    LBAwrite(fs->fat, numberOfBlocks, 1);
+    printf("num of blocks%ld, freespace blocks%d\n", numberOfBlocks, freespaceBlocks);
+    LBAwrite(fs->fat, freespaceBlocks, 1);
 
     return freespaceBlocks + 1;
 }
+
+void loadFAT(uint64_t numberOfBlocks, uint64_t blockSize)
+{
+    fs = (Freespace *)malloc(sizeof(Freespace));
+    int freespaceBlocks = (sizeof(int8_t) * numberOfBlocks + blockSize - 1) / blockSize;
+
+    fs->fat = (int8_t *)malloc(sizeof(int8_t) * freespaceBlocks* blockSize);
+    // Read the FAT from disk
+    LBAread(fs->fat, freespaceBlocks, 1);
+}
+
 int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
 {
     int head = -1;
@@ -108,14 +124,4 @@ int findNextBlock(int startBlock)
     }
     printf("what is the NEXT value? %d\n", fs->fat[startBlock]);
     return fs->fat[startBlock];
-}
-
-void loadFAT()
-{
-    fs = (Freespace *)malloc(sizeof(Freespace));
-    fs->fat = (int8_t *)malloc(sizeof(int8_t) * 19531);
-
-    // Read the FAT from disk
-    int fatBlocks = (sizeof(int8_t) * 19531 + 521 - 1) / 521;
-    LBAread(fs->fat, fatBlocks, 1);
 }

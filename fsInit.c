@@ -39,7 +39,7 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     if (vcbTest->volumeSignature == VOLUME_SIG)
     {
         printf("VCB already existed\n");
-        loadFAT();
+        loadFAT(numberOfBlocks, blockSize);
     }
     else
     // If not exist, initialize the VCB
