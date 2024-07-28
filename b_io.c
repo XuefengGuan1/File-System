@@ -27,7 +27,6 @@
 #include "fsUtil.h"
 #include "b_io.h"
 #define NUM_ENTRIES 56
-#define NUM_ENTRIES 56
 #define MAXFCBS 20
 #define B_CHUNK_SIZE 512
 #define NUM_BLOCKS 7
@@ -42,8 +41,7 @@ typedef struct b_fcb {
 	int size;
     DirectoryEntry *fi;       // Store file-specific information
 } b_fcb;
-#define NUM_BLOCKS 7
-#define START_BLOCK 40
+
 
 typedef struct b_fcb {
     char *buf;           // holds the open file buffer
@@ -83,12 +81,7 @@ b_io_fd b_getFCB ()
 		}
 		return (-1);  //all in use
 	}
-	DirectoryEntry *findFile(Path *parsed_path) {
-    
-    static DirectoryEntry fi; // Temporary static DirectoryEntry
-    // Fill fi with data from directory entry
-    return &fi;
-	}	
+
 // Interface to open a buffered file
 // Modification of interface for this assignment, flags match the Linux flags for open
 // O_RDONLY, O_WRONLY, or O_RDWR
