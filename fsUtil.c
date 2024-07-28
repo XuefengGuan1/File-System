@@ -155,8 +155,8 @@ int makeDirectory(DirectoryEntry *currentDirectory, char *childName)
 
 
     int freeBlock = findFreeBlock(41);
-    printf("Free block %d\n", freeBlock);
-    printf("what is the value? %d\n", freeBlock);
+    //printf("Free block %d\n", freeBlock);
+    //printf("what is the value? %d\n", freeBlock);
 
     if (freeBlock == -1)
     {

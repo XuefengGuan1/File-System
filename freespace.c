@@ -45,7 +45,7 @@ int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize)
             fs->fat[i] = FREEBLOCK;
         }
     }
-    printf("num of blocks%ld, freespace blocks%d\n", numberOfBlocks, freespaceBlocks);
+    //printf("num of blocks%ld, freespace blocks%d\n", numberOfBlocks, freespaceBlocks);
     LBAwrite(fs->fat, freespaceBlocks, 1);
 
     return freespaceBlocks + 1;
@@ -100,8 +100,8 @@ int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
 
 int findFreeBlock(int freespaceSize)
 {
-    printf("here\n");
-    printf("%d\n", freespaceSize);
+    //printf("here\n");
+    //printf("%d\n", freespaceSize);
     for (int i = freespaceSize; i < 19531; i++)
     {
 
@@ -109,7 +109,7 @@ int findFreeBlock(int freespaceSize)
         {
             return i;
         }
-        printf("what is the value? %d\n", fs->fat[i]);
+        //printf("what is the value? %d\n", fs->fat[i]);
     }
     // If no free space available
     return -1;
@@ -122,6 +122,6 @@ int findNextBlock(int startBlock)
     {
         return ENDBLOCK;
     }
-    printf("what is the NEXT value? %d\n", fs->fat[startBlock]);
+    //printf("what is the NEXT value? %d\n", fs->fat[startBlock]);
     return fs->fat[startBlock];
 }

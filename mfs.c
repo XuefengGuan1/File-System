@@ -118,7 +118,7 @@ int fs_isDir(char *pathname)
     {
         strcpy(buffer, pathname);
     }
-    printf("here??\n");
+    //printf("here??\n");
 
     if (pathname == NULL || strlen(pathname) == 0 || strlen(pathname) > MAX_PATH_LENGTH)
     {
@@ -141,7 +141,7 @@ int fs_isDir(char *pathname)
         printf("error: invalid root ");
         return -1;
     }
-    printf("here?\n");
+    //printf("here?\n");
     int i = 0;
     while (i < parsedPath->token_count - 1)
     {
@@ -241,8 +241,9 @@ int fs_setcwd(char *pathname)
     }
 
     //strcpy(currentWorkingDirectory, pathname);
-    free(currentWorkingDirectory);
-    currentWorkingDirectory = strdup(buffer);
+//    free(currentWorkingDirectory);
+    currentWorkingDirectory = malloc(strlen(buffer) +1);
+    strcpy(currentWorkingDirectory, buffer);
     myCwd = getDir;
 
     return 0;
@@ -268,14 +269,10 @@ char *fs_getcwd(char *pathname, size_t size)
         return "/";
     }
     strncpy(pathname, currentWorkingDirectory, size);
-<<<<<<< HEAD
+
     pathname[size - 1] = '\0';
     //free(pathname);
-    
-=======
-    free(pathname);
-
->>>>>>> 6a8b0c4 (last min changes)
+//    free(pathname);
     return pathname;
 }
 
@@ -402,4 +399,6 @@ int fs_stat(const char *path, struct fs_stat *buf)
     buf->st_modtime = getDir[0].modificationTime;
     buf->st_blocks = DIRECTORY_ENTRY_NUMBER;
     buf->st_size = getDir[0].size;
+
+    return 0;
 }
