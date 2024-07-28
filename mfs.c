@@ -10,7 +10,7 @@
 
 #define MAX_PATH_LENGTH 4096
 DirectoryEntry *myCwd = NULL;
-char *currentWorkingDirectory;
+char *currentWorkingDirectory = NULL;
 
 int fs_mkdir(const char *pathname, mode_t mode)
 {
@@ -179,17 +179,19 @@ int fs_isDir(char *pathname)
 int fs_setcwd(char *pathname)
 {
 
-    char *buffer = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
+    //char *buffer = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
+    char buffer[MAX_PATH_LENGTH];
     if (strncmp(pathname, ".", 1) == 0 || strncmp(pathname, "..", 2) == 0)
     {
         mergePath(currentWorkingDirectory, pathname, buffer);
     }
     else
     {
-        strcpy(buffer, pathname);
+        strncpy(buffer, pathname, MAX_PATH_LENGTH -1);
+        buffer[MAX_PATH_LENGTH -1] = '\0';
     }
 
-    currentWorkingDirectory = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
+    //currentWorkingDirectory = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
     if (pathname == NULL)
     {
 
@@ -238,7 +240,9 @@ int fs_setcwd(char *pathname)
         i++;
     }
 
-    strcpy(currentWorkingDirectory, pathname);
+    //strcpy(currentWorkingDirectory, pathname);
+    free(currentWorkingDirectory);
+    currentWorkingDirectory = strdup(buffer);
     myCwd = getDir;
 
     return 0;
@@ -246,11 +250,16 @@ int fs_setcwd(char *pathname)
 
 char *fs_getcwd(char *pathname, size_t size)
 {
-    pathname = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
+    //pathname = (char *)malloc(sizeof(char) * MAX_PATH_LENGTH);
     if (pathname == NULL || size == 0)
     {
         printf("error: pathname or size invalid");
         return NULL;
+    }
+    if(currentWorkingDirectory == NULL) {
+
+        strncpy(pathname, "/", size-1);
+        pathname[size-1] = '\0';
     }
 
     // construct path by traversing up the dir tree
@@ -258,7 +267,8 @@ char *fs_getcwd(char *pathname, size_t size)
         return "/";
     }
     strncpy(pathname, currentWorkingDirectory, size);
-    free(pathname);
+    pathname[size - 1] = '\0';
+    //free(pathname);
     
     return pathname;
 }
