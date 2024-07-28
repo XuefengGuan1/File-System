@@ -41,17 +41,6 @@ typedef struct b_fcb {
 	int size;
     DirectoryEntry *fi;       // Store file-specific information
 } b_fcb;
-
-
-typedef struct b_fcb {
-    char *buf;           // holds the open file buffer
-    int index;       // holds the current position in the buffer
-    int buflen;       // holds how many valid bytes are in the buffer
-    int numblocks;
-    int currentblock;
-	int size;
-    DirectoryEntry *fi;       // Store file-specific information
-} b_fcb;
 	
 b_fcb fcbArray[MAXFCBS];
 
