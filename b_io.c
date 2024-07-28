@@ -22,10 +22,26 @@
 #include "freespace.h"
 #include "fsLow.h"
 #include "fsUtil.h"
+#include "freespace.h"
+#include "fsLow.h"
+#include "fsUtil.h"
 #include "b_io.h"
+#define NUM_ENTRIES 56
 #define NUM_ENTRIES 56
 #define MAXFCBS 20
 #define B_CHUNK_SIZE 512
+#define NUM_BLOCKS 7
+#define START_BLOCK 40
+
+typedef struct b_fcb {
+    char *buf;           // holds the open file buffer
+    int index;       // holds the current position in the buffer
+    int buflen;       // holds how many valid bytes are in the buffer
+    int numblocks;
+    int currentblock;
+	int size;
+    DirectoryEntry *fi;       // Store file-specific information
+} b_fcb;
 #define NUM_BLOCKS 7
 #define START_BLOCK 40
 
@@ -122,7 +138,9 @@ b_io_fd b_open (char * filename, int flags)
         }
 
         // Allocate initial block for the new file
-        int location = allocateBlocks(1, freespaceBlocksGlobal);
+        int startblock = findFreeBlock(1);
+        printf("creating file b_open, b-io\n");
+        int location = allocateBlocks(1, startblock);
         if (location == -1) {
             return -1; // Failed to allocate blocks
         }
@@ -132,45 +150,55 @@ b_io_fd b_open (char * filename, int flags)
         strcpy(parentDirectory[freeSlot].name, fileName);
         parentDirectory[freeSlot].location = location;
         parentDirectory[freeSlot].size = 0;
+        parentDirectory[freeSlot].isDirect=0;
 
         // Write the updated directory to disk
+        printf("Calling updatParent \n");
         updateParent(parentDirectory, parentDirectory[freeSlot].name, freeSlot, parentDirectory[freeSlot].location);
-     
+        // updating parent
+        // if (LBAwrite(parentDirectory, 1, parentDirectory[0].location) == -1) {
+        //         return -1; // Error writing directory to disk
+        //     }
         fileEntry = &parentDirectory[freeSlot];
         fileIndex = freeSlot;
+        
+       
     } else {
         // Handle file truncation if O_TRUNC flag is set
         if (flags & O_TRUNC) {
+            printf("In truncate fuction b_open\n");
             fileEntry->size = 0;
             // Deallocate current blocks and allocate new blocks if needed
             deallocateBlocks(fileEntry->location);
-            fileEntry->location = allocateBlocks(1, freespaceBlocksGlobal);
+              int startblock = findFreeBlock(1);
+            fileEntry->location = allocateBlocks(1, startblock);
             if (fileEntry->location == -1) {
                 return -1; // Failed to allocate blocks
             }
             // Write the updated directory entry
-            if (LBAwrite(parentDirectory, NUM_BLOCKS, START_BLOCK) == -1) {
-                return -1; // Error writing directory to disk
-            }
+            updateParent(parentDirectory, fileEntry->name, fileIndex, fileEntry->location);
         }
+    }// Get our own file descriptor
+   	
+    returnFd = b_getFCB(); 
+    if (returnFd == -1) {
+        return -1; // No free FCBs
     }
-
+    printf("NExt append conditional\n");
     // Handle appending data if O_APPEND flag is set
     if (flags & O_APPEND) {
+          printf("Enter append conditional\n");
         // Set the file control block index to the end of the file
         fcbArray[returnFd].index = fileEntry->size;
     } else {
         // Set initial index based on the mode
         fcbArray[returnFd].index = 0;
     }
-  
-	if (startup == 0) b_init();  //Initialize our system
+    printf("Flag check complete\n");
+	// if (startup == 0) b_init();  //Initialize our system
 	
-	returnFd = b_getFCB();       // Get our own file descriptor
-    if (returnFd == -1) {
-        return -1; // No free FCBs
-    }
-    fcbArray[returnFd].buf = (char *)malloc(B_CHUNK_SIZE);
+       
+    // fcbArray[returnFd].buf = (char *)malloc(B_CHUNK_SIZE);
     if (fcbArray[returnFd].buf == NULL) {
         return -1; // Memory allocation failed
     }
@@ -178,7 +206,7 @@ b_io_fd b_open (char * filename, int flags)
     fcbArray[returnFd].numblocks = 1;
     fcbArray[returnFd].currentblock = fileEntry->location;
     fcbArray[returnFd].size = fileEntry->size;
-
+    printf("\nExitng b_open file creation\n");
     return returnFd; // Return the file descriptor
 
 }
@@ -244,7 +272,7 @@ int b_write (b_io_fd fd, char * buf, int count)
     }
 
     return bytes_written; // return the number of bytes written
-	}
+    }
 
 
 
@@ -276,7 +304,7 @@ int b_read (b_io_fd fd, char * buf, int count)
 	int bytestoreturn;
 	int blockstocopy;
 	int bufbytesremaing;
-	if (startup == 0) b_init();  //Initialize our system
+	// if (startup == 0) b_init();  //Initialize our system
 
 	// check that fd is between 0 and (MAXFCBS-1)
 	if ((fd < 0) || (fd >= MAXFCBS))
@@ -329,7 +357,7 @@ int b_read (b_io_fd fd, char * buf, int count)
 // Interface to Close the file	
 int b_close (b_io_fd fd)
 	{
-	
+	printf("In b_close\n");
     if (startup == 0) b_init(); // Initialize our system
 
     // check that fd is between 0 and (MAXFCBS-1)
@@ -343,5 +371,4 @@ int b_close (b_io_fd fd)
     }
 
     return 0;
-}
-	
+	}
