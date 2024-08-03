@@ -1,3 +1,18 @@
+/**************************************************************
+ * Class::  CSC-415-02 Spring 2024
+ * Name::Xuefeng Guan, Joseph Gard, Min Oo, Inderpaul Bhander
+ * Student IDs::920016536, 921772888, 922837952, 922590731
+ * GitHub-Name::XuefengGuan1
+ * Group-Name::Team-A
+ * Project:: Basic File System
+ *
+ * File:: freespace.h
+ *
+ * Description:: This file contains the functions for managing free
+ *   space using a FAT table.
+ *
+ **************************************************************/
+
 #ifndef FREESPACE_H
 #define FREESPACE_H
 

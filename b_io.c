@@ -1,14 +1,14 @@
 /**************************************************************
-* Class::  CSC-415-0# Spring 2024
-* Name::
-* Student IDs::
-* GitHub-Name::
-* Group-Name::
+* Class::  CSC-415-02 Spring 2024
+* Name::Xuefeng Guan, Joseph Gard, Min Oo, Inderpaul Bhander
+* Student IDs:: 920016536, 921772888, 922837952, 922590731
+* GitHub-Name::XuefengGuan1
+* Group-Name::Team-A
 * Project:: Basic File System
 *
 * File:: b_io.c
 *
-* Description:: Basic File System - Key File I/O Operations
+* Description:: Basic File System 
 *
 **************************************************************/
 
@@ -135,7 +135,6 @@ b_io_fd b_open (char * filename, int flags)
         parentDirectory[freeSlot].isDirect=0;
 
         // Write the updated directory to disk
-        printf("Calling updatParent \n");
         updateParent(parentDirectory, parentDirectory[freeSlot].name, freeSlot, parentDirectory[freeSlot].location, 0);
         // updating parent
         // if (LBAwrite(parentDirectory, 1, parentDirectory[0].location) == -1) {
@@ -176,8 +175,6 @@ b_io_fd b_open (char * filename, int flags)
         // Set initial index based on the mode
         fcbArray[returnFd].index = 0;
     }
-    printf("Flag check complete\n");
-	// if (startup == 0) b_init();  //Initialize our system
 	
        
     // fcbArray[returnFd].buf = (char *)malloc(B_CHUNK_SIZE);
@@ -188,7 +185,6 @@ b_io_fd b_open (char * filename, int flags)
     fcbArray[returnFd].numblocks = 1;
     fcbArray[returnFd].currentblock = fileEntry->location;
     fcbArray[returnFd].size = fileEntry->size;
-    printf("\nExitng b_open file creation\n");
     return returnFd; // Return the file descriptor
 
 }

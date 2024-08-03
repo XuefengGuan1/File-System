@@ -1,9 +1,9 @@
 /**************************************************************
 * Class::  CSC-415
-* Name:: Professor Bierman
-* Student IDs:: N/A
+* Name:: Xuefeng Guan, Joseph Gard, Min Oo, Inderpaul Bhander
+* Student IDs:: 920016536, 921772888, 922837952, 922590731
 * GitHub-Name:: bierman
-* Group-Name:: N/A
+* Group-Name:: Team-A
 * Project:: Basic File System
 *
 * File:: fsLow.h

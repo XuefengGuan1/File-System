@@ -1,17 +1,17 @@
-// /**************************************************************
-// * Class::  CSC-415-02 Spring 2024
-// * Name::Inderpaul Bhander
-// * Student IDs::
-// * GitHub-Name::
-// * Group-Name::
-// * Project:: Basic File System
-// *
-// * File:: freespace.c
-// *
-// * Description:: This file contains the functions for managing free
-// *   space using a FAT table.
-// *
-// **************************************************************/
+/**************************************************************
+* Class::  CSC-415-02 Spring 2024
+* Name::Xuefeng Guan, Joseph Gard, Min Oo, Inderpaul Bhander
+* Student IDs::920016536, 921772888, 922837952, 922590731
+* GitHub-Name::XuefengGuan1
+* Group-Name::Team-A
+* Project:: Basic File System
+*
+* File:: directoryEntry.h
+*
+* Description:: This file contains the functions for managing 
+* directory entries
+*
+**************************************************************/
 
 #ifndef DIRECTORYENTRY_H
 #define DIRECTORYENTRY_H

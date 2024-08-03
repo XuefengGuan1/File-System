@@ -1,9 +1,9 @@
 /**************************************************************
- * Class::  CSC-415-0# Spring 2024
- * Name::
- * Student IDs::
- * GitHub-Name::
- * Group-Name::
+ * Class::  CSC-415-02 Spring 2024
+ * Name::Xuefeng Guan, Joseph Gard, Min Oo, Inderpaul Bhander
+ * Student IDs::920016536, 921772888, 922837952, 922590731
+ * GitHub-Name::XuefengGuan1
+ * Group-Name::Team-A
  * Project:: Basic File System
  *
  * File:: fsShell.c
@@ -38,8 +38,8 @@
 /****   SET THESE TO 1 WHEN READY TO TEST THAT COMMAND ****/
 #define CMDLS_ON 1
 #define CMDMD_ON 1
-#define CMDCP2L_ON 1
-#define CMDCP2FS_ON 0
+#define CMDCP2L_ON 0
+#define CMDCP2FS_ON 1
 #define CMDCD_ON 1
 #define CMDPWD_ON 1
 #define CMDTOUCH_ON 1
@@ -49,7 +49,7 @@
 //optional implementation
 #define CMDMV_ON 0
 #define CMDRM_ON 0
-#define CMDCP_ON 0
+#define CMDCP_ON 1
 
 typedef struct dispatch_t
 {

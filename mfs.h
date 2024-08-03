@@ -1,9 +1,9 @@
 /**************************************************************
- * Class::  CSC-415-0# Spring 2024
- * Name::
- * Student IDs::
- * GitHub-Name::
- * Group-Name::
+ * Class::  CSC-415-02 Spring 2024
+ * Name::Xuefeng Guan, Joseph Gard, Min Oo, Inderpaul Bhander
+ * Student IDs::920016536, 921772888, 922837952, 922590731
+ * GitHub-Name::XuefengGuan1
+ * Group-Name::Team-A
  * Project:: Basic File System
  *
  * File:: mfs.h

@@ -1,3 +1,16 @@
+/**************************************************************
+ * Class::  CSC-415-02 Spring 2024
+ * Name::Xuefeng Guan, Joseph Gard, Min Oo, Inderpaul Bhander
+ * Student IDs::920016536, 921772888, 922837952, 922590731
+ * GitHub-Name::XuefengGuan1
+ * Group-Name::Team-A
+ * Project:: Basic File System
+ *
+ * File:: mfs.c
+ *
+ * Description:: Key commands used in the shell
+ *
+ **************************************************************/
 #include "mfs.h"
 #include "directoryEntry.h"
 #include "b_io.h"
