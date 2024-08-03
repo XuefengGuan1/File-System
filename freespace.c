@@ -1,9 +1,9 @@
 /**************************************************************
  * Class::  CSC-415-02 Spring 2024
- * Name::Inderpaul Bhander
- * Student IDs::
- * GitHub-Name::
- * Group-Name::
+ * Name::Xuefeng Guan, Joseph Gard, Min Oo, Inderpaul Bhander
+ * Student IDs::920016536, 921772888, 922837952, 922590731
+ * GitHub-Name::XuefengGuan1
+ * Group-Name::Team-A
  * Project:: Basic File System
  *
  * File:: freespace.c
@@ -19,28 +19,46 @@
 #include <stdint.h>
 #include "fsLow.h"
 #include "freespace.h"
+#include "vcb.h"
 
-uint64_t numberOfBlocksGlobal;
 typedef struct Freespace
 {
-    int *fat;
+    int8_t *fat;
 } Freespace;
 Freespace *fs;
 
 int initializeFreeSpace(uint64_t numberOfBlocks, uint64_t blockSize)
 {
-    numberOfBlocksGlobal = numberOfBlocks;
-
     fs = (Freespace *)malloc(sizeof(Freespace));
-    fs->fat = (int *)malloc(sizeof(int) * numberOfBlocks);
+    int freespaceBlocks = (sizeof(int8_t) * numberOfBlocks + blockSize - 1) / blockSize;
 
-    int freespaceBlocks = (sizeof(int) * numberOfBlocks + blockSize - 1) / blockSize;
+    fs->fat = (int8_t *)malloc(sizeof(int8_t) * freespaceBlocks * blockSize);
+
     for (int i = 0; i < numberOfBlocks; i++)
     {
-        fs->fat[i] = FREEBLOCK;
+        if (i < 40)
+        {
+            fs->fat[i] = RESERVED;
+        }
+        else
+        {
+            fs->fat[i] = FREEBLOCK;
+        }
     }
-    LBAwrite(fs->fat, numberOfBlocks, 1);
+    //printf("num of blocks%ld, freespace blocks%d\n", numberOfBlocks, freespaceBlocks);
+    LBAwrite(fs->fat, freespaceBlocks, 1);
+
     return freespaceBlocks + 1;
+}
+
+void loadFAT(uint64_t numberOfBlocks, uint64_t blockSize)
+{
+    fs = (Freespace *)malloc(sizeof(Freespace));
+    int freespaceBlocks = (sizeof(int8_t) * numberOfBlocks + blockSize - 1) / blockSize;
+
+    fs->fat = (int8_t *)malloc(sizeof(int8_t) * freespaceBlocks* blockSize);
+    // Read the FAT from disk
+    LBAread(fs->fat, freespaceBlocks, 1);
 }
 
 int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
@@ -58,8 +76,6 @@ int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
             return -1;
         }
 
-        printf("Allocated block: %d\n", blockNode);
-
         if (head == -1)
         {
             head = blockNode;
@@ -73,25 +89,39 @@ int allocateBlocks(int numOfBlocksToAllocate, int freespaceSize)
         prevNode = blockNode;
     }
 
-    printf("Allocation complete. Head block: %d\n", head);
-
-    if (LBAwrite(fs->fat, numberOfBlocksGlobal, 1) == -1)
+    if (LBAwrite(fs->fat, 39, 1) == -1)
     {
         printf("Error writing FAT to disk\n");
         return -1;
     }
+
     return head;
 }
+
 int findFreeBlock(int freespaceSize)
 {
-    for (int i = freespaceSize; i < numberOfBlocksGlobal; i++)
+    //printf("here\n");
+    //printf("%d\n", freespaceSize);
+    for (int i = freespaceSize; i < 19531; i++)
     {
+
         if (fs->fat[i] == FREEBLOCK)
         {
-            printf("runned %d in findfreeblock\n", i);
             return i;
         }
+        //printf("what is the value? %d\n", fs->fat[i]);
     }
     // If no free space available
     return -1;
+}
+
+int findNextBlock(int startBlock)
+{
+
+    if (fs->fat[startBlock] == ENDBLOCK)
+    {
+        return ENDBLOCK;
+    }
+    //printf("what is the NEXT value? %d\n", fs->fat[startBlock]);
+    return fs->fat[startBlock];
 }

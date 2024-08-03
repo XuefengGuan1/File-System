@@ -1,9 +1,9 @@
 /**************************************************************
  * Class::  CSC-415-02 Spring 2024
- * Name::Inderpaul Bhander
- * Student IDs::
- * GitHub-Name::
- * Group-Name::
+ * Name::Xuefeng Guan, Joseph Gard, Min Oo, Inderpaul Bhander
+ * Student IDs::920016536, 921772888, 922837952, 922590731
+ * GitHub-Name::XuefengGuan1
+ * Group-Name::Team-A
  * Project:: Basic File System
  *
  * File:: vcb.c
@@ -21,23 +21,23 @@
 #include "fsLow.h"
 #include <sys/types.h>
 
-
 int initializeVCB(uint64_t volumeSize, uint64_t blockSize)
 {
-    VolumeControlBlock *vcb;
+    VolumeControlBlock *vcb = (VolumeControlBlock *)malloc(sizeof(VolumeControlBlock));
 
-    // printf("initilzation function runned?\n");
     vcb->blockSize = blockSize;
     vcb->volumeSignature = VOLUME_SIG; // unique signature
     vcb->volumeSize = volumeSize;
     vcb->fatTableLocation = 1; // FAT is block 1, vcb is 0, root is 2
+    vcb->rootDirectoryLocation = 41;
 
     // write vcb to disk
-    if (LBAwrite(&vcb, 1, 0) != 1)
+    if (LBAwrite(vcb, 1, 0) != 1)
     {
         printf("Error: faile to write to disk");
         return -1;
     }
+    free(vcb);
 
     return 0;
 }

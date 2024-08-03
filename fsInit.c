@@ -1,8 +1,8 @@
 /**************************************************************
  * Class::  CSC-415-02 Spring 2024
- * Name::Joseph Gard,
- * Student IDs::921772888
- * GitHub-Name::Xuefengguan1
+ * Name::Xuefeng Guan, Joseph Gard, Min Oo, Inderpaul Bhander
+ * Student IDs::920016536, 921772888, 922837952, 922590731
+ * GitHub-Name::XuefengGuan1
  * Group-Name::Team-A
  * Project:: Basic File System
  *
@@ -24,6 +24,7 @@
 #include "mfs.h"
 #include "vcb.h"
 #include "freespace.h"
+#include "fsUtil.h"
 
 int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
 {
@@ -32,12 +33,13 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
     LBAread(readBuffer, 1, 0);
     char localVCB[sizeof(VolumeControlBlock)];
     memcpy(localVCB, readBuffer, sizeof(VolumeControlBlock));
-    VolumeControlBlock *vcb = (VolumeControlBlock *)localVCB;
+    VolumeControlBlock *vcbTest = (VolumeControlBlock *)localVCB;
 
     // If existed, doesn't do anything
-    if (vcb->volumeSignature == VOLUME_SIG)
+    if (vcbTest->volumeSignature == VOLUME_SIG)
     {
         printf("VCB already existed\n");
+        loadFAT(numberOfBlocks, blockSize);
     }
     else
     // If not exist, initialize the VCB
@@ -48,17 +50,19 @@ int initFileSystem(uint64_t numberOfBlocks, uint64_t blockSize)
             printf("initalization function error?\n");
             return -1;
         }
+
+        // init freespace later add this in the check if vcb exist function
+        int freespaceSize = initializeFreeSpace(numberOfBlocks, blockSize);
+        if (freespaceSize == -1)
+        {
+            printf("initalization function error?\n");
+            return -1;
+        }
+
+        // init root directory
+        int rootDirStartingBlock = createDir(freespaceSize, blockSize, NULL, -1);
     }
-    // init freespace later add this in the check if vcb exist function
-    int freespaceSize = initializeFreeSpace(numberOfBlocks, blockSize);
-    if (freespaceSize == -1)
-    {
-        printf("initalization function error?\n");
-        return -1;
-    }
-    
-    // init root directory 
-    int rootDirStartingBlock = createDir(freespaceSize, blockSize,NULL);
+
     return 0;
 }
 void exitFileSystem()
